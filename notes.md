@@ -21,6 +21,14 @@ See [./rubric.md](./rubric.md)
 
 - Can Qualified run and test a mono-repo?
 
+> No
+
+- Does NPM correctly handle a mono-repo on Windows?
+
+> No. `npm --previx ./front-end install` has a [bug](https://github.com/npm/cli/issues/1290) that installs binary scripts in the wrong location. 
+> 
+> Before release to the students we will have to find an alternative. Most likely solution is to split the repositories.
+
 ## Missing content
 
 This section lists things that the student must know about to successfully complete this capstone but may potentially be missing from earlier checkpoints
@@ -29,6 +37,7 @@ This section lists things that the student must know about to successfully compl
 - Deploying a mono-repo to vercel
 - Using a separate database for testing - DDL did not see a test environment database covered in Knex.
 - Automatically running latest migrations when application starts - didn't see this either
+- e2e tests and screen shots
 
 ## Backlog brain dump
 
@@ -96,6 +105,7 @@ When you pick up an item, let the other person know what you are starting.
 ### Dashboard
 
 - Lists reservations for a single date
+- Quickly "jump" to a specific date on the dashboard
 - Lists total number of customers by the current reservation time increment
 - Lists each table, the guest at each table, and the waiter currently assigned to the table, and the estimated time the table will leave
 - Show status of reservation - booked, arrived, seated, finished, wait listed, canceled, or no show

@@ -36,7 +36,7 @@ function ReservationForm({
 
   return (
     <>
-      <form onSubmit={submitHandler} className="reservation-form">
+      <form onSubmit={submitHandler}>
         <fieldset>
           <div className="row">
             <div className="form-group col">
@@ -123,7 +123,7 @@ function ReservationForm({
           </div>
           <button
             type="button"
-            className="btn btn-secondary mr-2"
+            className="btn btn-secondary mr-2 cancel"
             onClick={onCancel}
           >
             <span className="oi oi-x" /> Cancel

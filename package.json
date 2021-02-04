@@ -9,17 +9,19 @@
   },
   "scripts": {
     "build": "npm -prefix front-end run build",
-    "install": "npm --prefix back-end install && npm --prefix front-end install",
+    "preinstall": "npm install --prefix ./back-end ",
+    "install": "npm install --prefix ./front-end",
     "start": "npx concurrently 'npm run start:back-end' 'npm run start:front-end'",
-    "start:back-end": "npm --prefix back-end start",
-    "start:front-end": "npm --prefix front-end start",
-    "start:dev": "npx concurrently 'npm --prefix back-end run start:dev' 'npm --prefix front-end start'",
+    "start:back-end": "npm --prefix ./back-end start",
+    "start:front-end": "npm --prefix ./front-end start",
+    "start:dev": "npx concurrently 'npm run start:dev --prefix ./back-end' 'npm start --prefix ./front-end'",
     "test": "npm run test:back-end test && npm run test:front-end",
-    "test:back-end": "npm --prefix back-end test",
-    "test:front-end": "CI=true npm --prefix front-end test",
-    "test:front-end:watch": "npm --prefix front-end test"
+    "test:back-end": "npm test --prefix ./back-end",
+    "test:front-end": "npm test --prefix ./front-end",
+    "test:e2e": "npm run test:e2e --prefix ./front-end",
+    "test:front-end:watch": "npm test --prefix ./front-end"
   },
   "keywords": [],
   "author": "Thinkful, Inc.",
-  "license": "UNLICENSES"
+  "license": "UNLICENSED"
 }

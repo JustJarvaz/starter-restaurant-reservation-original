@@ -3,7 +3,7 @@ import App from "./App";
 import { BrowserRouter as Router } from "react-router-dom";
 import "@testing-library/jest-dom/extend-expect";
 
-test("renders learn react link", () => {
+test("renders restaurant link", () => {
   render(
     <Router>
       <App />

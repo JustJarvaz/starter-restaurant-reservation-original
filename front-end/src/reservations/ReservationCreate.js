@@ -5,7 +5,7 @@ import { createReservation } from "../utils/api";
 import ReservationForm from "./ReservationForm";
 import { formatAsDate } from "../utils/dates";
 
-function DishCreate() {
+function ReservationCreate() {
   const history = useHistory();
 
   const [error, setError] = useState(null);
@@ -37,4 +37,4 @@ function DishCreate() {
   );
 }
 
-export default DishCreate;
+export default ReservationCreate;
