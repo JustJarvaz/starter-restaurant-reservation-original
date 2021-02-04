@@ -55,7 +55,7 @@ Once the tests are passing for a given user story, you know you have the necessa
 To help you better understand what might be happening during the end-to-end tests, screenshots are taken at various points in the test.
 The screenshots are saved in `front-end/.screenshots` and you can review them after running the end-to-end tests.
 
-You can use the screenshots to debug your code by rendering additional information on the screen. 
+You can use the screenshots to debug your code by rendering additional information on the screen.
 
 ## Product Backlog
 

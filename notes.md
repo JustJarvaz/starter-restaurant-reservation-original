@@ -25,8 +25,8 @@ See [./rubric.md](./rubric.md)
 
 - Does NPM correctly handle a mono-repo on Windows?
 
-> No. `npm --previx ./front-end install` has a [bug](https://github.com/npm/cli/issues/1290) that installs binary scripts in the wrong location. 
-> 
+> No. `npm --previx ./front-end install` has a [bug](https://github.com/npm/cli/issues/1290) that installs binary scripts in the wrong location.
+>
 > Before release to the students we will have to find an alternative. Most likely solution is to split the repositories.
 
 ## Missing content
