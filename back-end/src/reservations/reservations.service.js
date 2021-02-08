@@ -1,7 +1,13 @@
 const knex = require("../db/connection");
 const hasProperty = require("../errors/hasProperty");
 const compose = require("../utils/compose");
+const convertISOTimeToMinutes = require("../utils/convertISOTimeToMinutes");
 const traceFunction = require("../logging/traceFunction");
+const {
+  ERROR_MESSAGES,
+  RESTAURANT_SCHEDULE,
+  WEEKDAYS,
+} = require("./reservations.constants.js");
 
 const tableName = "reservations";
 
@@ -44,6 +50,45 @@ function hasReservationTime(reservation = {}) {
   throw error;
 }
 
+function isFutureDate(reservation) {
+  const { reservation_date, reservation_time } = reservation;
+
+  if (new Date(`${reservation_date} ${reservation_time}`) > new Date()) {
+    return reservation;
+  }
+  const error = new Error(ERROR_MESSAGES.invalidDate);
+  error.status = 400;
+  throw error;
+}
+
+function isWorkingDay(reservation) {
+  const { reservation_date = "" } = reservation;
+  const day = new Date(date).getUTCDay();
+  if (RESTAURANT_SCHEDULE.closedDays.includes(day)) {
+    const error = new Error(ERROR_MESSAGES.invalidDay);
+    error.status = 400;
+    throw error;
+  }
+  return reservation;
+}
+
+function isWithinEligibleTimeframe(reservation) {
+  let { reservation_time = "" } = reservation;
+  reservation_time = convertISOTimeToMinutes(time);
+  if (
+    reservation_time < convertISOTimeToMinutes(RESTAURANT_SCHEDULE.openTime) ||
+    reservation_time >
+      convertISOTimeToMinutes(RESTAURANT_SCHEDULE.closeTime) -
+        RESTAURANT_SCHEDULE.closeTimeBuffer
+  ) {
+    const error = new Error(ERROR_MESSAGES.invalidTime);
+    error.status = 400;
+    throw error;
+  }
+
+  return reservation;
+}
+
 function create(newReservation) {
   return knex(tableName)
     .insert(newReservation, "*")
@@ -62,6 +107,9 @@ function read(reservation_id) {
 
 const createComposition = compose(
   create,
+  isWithinEligibleTimeframe,
+  isWorkingDay,
+  isFutureDate,
   peopleIsGreaterThanZero,
   hasReservationTime,
   hasReservationDate,

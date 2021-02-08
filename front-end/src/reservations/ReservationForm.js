@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import validate from "./validate";
+import { STATUS } from "./constants";
 
 function ReservationForm({
   onSubmit,
@@ -13,6 +15,16 @@ function ReservationForm({
   },
 }) {
   const [reservation, setReservation] = useState(initialState);
+  const [status, setStatus] = useState(STATUS.idle);
+  const [errors, setErrors] = useState({});
+  const isValid = Object.keys(errors).length === 0;
+
+  useEffect(() => {
+    if (isValid && status === STATUS.submitting) {
+      onSubmit(reservation);
+      setStatus(STATUS.submitted);
+    }
+  }, [errors]);
 
   function changeHandler({ target: { name, value } }) {
     setReservation((previousReservation) => ({
@@ -31,11 +43,22 @@ function ReservationForm({
   function submitHandler(event) {
     event.preventDefault();
     event.stopPropagation();
-    onSubmit(reservation);
+    setStatus(STATUS.submitting);
+    setErrors(validate(reservation));
   }
 
   return (
     <>
+      {!isValid && (
+        <div className="alert alert-danger" data-test="errors">
+          <p>Please fix the following errors:</p>
+          <ul>
+            {Object.values(errors).map((error, index) => (
+              <li key={`${error}-${index}`}>{error}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <form onSubmit={submitHandler}>
         <fieldset>
           <div className="row">

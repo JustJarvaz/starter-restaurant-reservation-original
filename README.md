@@ -60,8 +60,7 @@ You can use the screenshots to debug your code by rendering additional informati
 
 ## Product Backlog
 
-The tests exist for each of these user stories. The tests are organized by user story so that you know exactly which tests
-you need to make pass for the user story you are currently implementing.
+The tests exist for each of these user stories. The tests are organized by user story so that you know exactly which tests you need to make pass for the user story you are currently implementing.
 
 There are no user stories for deployment. You are encouraged to deploy early and often. You may even decide to deploy
 before adding any features. Since this is a monorepo, you can follow the instructions in [this vercel article on monorepos](https://vercel.com/blog/monorepos) to deploy this project.
@@ -98,13 +97,32 @@ so that I know how many customers will arrive at the restaurant on a given day.
 >
 > You do no need to worry about different or changing time zones for the dates or times.
 
-### US-2 Reservation form validation
+### US-2 Create reservation on a future, working date
 
-Hou
+As a restaurant manager
+I want to allow my customers to make a reservation on a future, working date only
 
-### US-3 Backend reservation validation
+#### Acceptance criteria
 
-Hou
+Given that the restaurant mananger is on the `/reservations/new` page,
+When the restaurant manager submits a reservation form,
+Display an error message if any of the following constraints are violated:
+
+- The date and time of the reservation must occur some time in the future, on a day the restaurant is open for service (the restaurant is closed on Tuesdays).
+
+### US-3 Create reservation within eligible timeframe
+
+As a restaurant manager
+I want to allow my customers to make a reservation within an eligible timeframe only
+
+#### Acceptance criteria
+
+Given that the restaurant mananger is on the `/reservations/new` page,
+When the restaurant manager submits a reservation form,
+Display an error message if the following constraints are violated:
+
+- The reservation can only be made during normal business hours (i.e., between **10:30AM** and **10:30PM**),
+- The latest reservation time must _not_ occur within 60 minutes of the close time, so any reservation made between **10:30AM** (inclusive) and **9:30PM** (inclusive) will be honored.
 
 ### US-4 Seat reservation
 

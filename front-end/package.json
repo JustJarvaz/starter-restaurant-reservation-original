@@ -13,6 +13,7 @@
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^11.2.3",
     "@testing-library/user-event": "^12.6.0",
+    "puppeteer": "^5.5.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router": "^5.2.0",
@@ -26,7 +27,7 @@
     "start:frontend": "npx cross-env BROWSER=none NODE_ENV=test react-scripts start",
     "build": "react-scripts build",
     "test": "npx cross-env CI=true run-s test:unit test:e2e",
-    "test:unit": "react-scripts test ",
+    "test:unit": "react-scripts test",
     "test:e2e": "run-p -l -r start:* test:e2e:run",
     "test:e2e:run": "jest --config ./e2e/jest.config.js",
     "eject": "react-scripts eject"
