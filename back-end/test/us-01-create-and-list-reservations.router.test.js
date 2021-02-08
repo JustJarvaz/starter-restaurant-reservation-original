@@ -3,20 +3,23 @@ const request = require("supertest");
 const app = require("../src/app");
 const knex = require("../src/db/connection");
 
-describe("Create and list reservations", () => {
-  beforeEach(() => {
+describe("US-01 - Create and list reservations", () => {
+  beforeAll(() => {
     return knex.migrate
       .forceFreeMigrationsLock()
       .then(() => knex.migrate.rollback(null, true))
-      .then(() => knex.migrate.latest())
-      .then(() => knex.seed.run());
+      .then(() => knex.migrate.latest());
+  });
+
+  beforeEach(() => {
+    return knex.seed.run();
   });
 
   afterAll(async () => {
     return await knex.migrate.rollback(null, true).then(() => knex.destroy());
   });
 
-  describe("GET /reservations/:reservationId", () => {
+  describe("GET /reservations/:reservation_id", () => {
     test("returns 404 for non-existent id", async () => {
       const response = await request(app)
         .get("/reservations/99")

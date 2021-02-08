@@ -6,6 +6,8 @@ import Dashboard from "../dashboard/Dashboard";
 import NotFound from "./NotFound";
 import useQuery from "../utils/useQuery";
 import { today } from "../utils/dates";
+import TableCreate from "../tables/TableCreate";
+import ReservationSeat from "../reservations/ReservationSeat";
 
 function Routes() {
   const query = useQuery();
@@ -20,6 +22,12 @@ function Routes() {
       </Route>
       <Route path="/reservations/new">
         <ReservationCreate />
+      </Route>
+      <Route path="/reservations/:reservation_id/seat">
+        <ReservationSeat />
+      </Route>
+      <Route path="/tables/new">
+        <TableCreate />
       </Route>
       <Route path="/dashboard">
         <Dashboard date={query.get("date") || today()} />

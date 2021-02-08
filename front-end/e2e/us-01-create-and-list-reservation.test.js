@@ -9,15 +9,16 @@ const onPageConsole = (msg) =>
     console.log(`<LOG::page console ${msg.type()}>`, ...eventJson)
   );
 
-describe("Create Reservation Page", () => {
+describe("US-01 - Create and list reservations - E2E", () => {
   let page;
   let browser;
 
   beforeAll(async () => {
     await fsPromises.mkdir("./.screenshots", { recursive: true });
-    browser = await puppeteer.launch();
+    browser = await puppeteer.launch({ args: ["--start-maximized"] });
     page = await browser.newPage();
     page.on("console", onPageConsole);
+    await page.setViewport({ width: 1920, height: 1080 });
   });
 
   afterAll(async () => {
@@ -39,18 +40,24 @@ describe("Create Reservation Page", () => {
       await page.type("input[name=reservation_time]", "1330");
       await page.type("input[name=people]", "2");
 
-      await page.screenshot({ path: ".screenshots/us-01-submit-before.png" });
+      await page.screenshot({
+        path: ".screenshots/us-01-submit-before.png",
+        fullPage: true,
+      });
 
       await Promise.all([
-        page.click("button[type=submit]"),
+        page.click("[type=submit]"),
         page.waitForNavigation({ waitUntil: "networkidle0" }),
       ]);
 
-      await page.screenshot({ path: ".screenshots/us-01-submit-after.png" });
+      await page.screenshot({
+        path: ".screenshots/us-01-submit-after.png",
+        fullPage: true,
+      });
 
       await expect(page).toMatch(lastName);
     });
-    test("canceling form creates returns to previous page", async () => {
+    test("canceling form returns to previous page", async () => {
       await page.goto(`${baseURL}/dashboard`, { waitUntil: "networkidle0" });
       await page.goto(`${baseURL}/reservations/new`, {
         waitUntil: "networkidle0",
@@ -64,14 +71,20 @@ describe("Create Reservation Page", () => {
         throw new Error("button containing cancel not found.");
       }
 
-      await page.screenshot({ path: ".screenshots/us-01-cancel-before.png" });
+      await page.screenshot({
+        path: ".screenshots/us-01-cancel-before.png",
+        fullPage: true,
+      });
 
       await Promise.all([
         cancelButton.click(),
         page.waitForNavigation({ waitUntil: "networkidle0" }),
       ]);
 
-      await page.screenshot({ path: ".screenshots/us-01-cancel-after.png" });
+      await page.screenshot({
+        path: ".screenshots/us-01-cancel-after.png",
+        fullPage: true,
+      });
 
       await expect(page.url()).toContain("/dashboard");
     });

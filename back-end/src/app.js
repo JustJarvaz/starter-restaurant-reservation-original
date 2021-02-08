@@ -9,6 +9,7 @@ const errorHandler = require("./errors/errorHandler");
 const httpLogger = require("./logging/httpLogger");
 const notFound = require("./errors/notFound");
 const reservationsRouter = require("./reservations/reservations.router");
+const tablessRouter = require("./tables/tables.router");
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/reservations", reservationsRouter);
+app.use("/tables", tablessRouter);
 
 app.use(notFound);
 app.use(errorHandler);

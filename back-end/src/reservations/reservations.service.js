@@ -56,6 +56,10 @@ function list(date) {
     .orderBy("reservation_time");
 }
 
+function read(reservation_id) {
+  return knex(tableName).where({ reservation_id }).first();
+}
+
 const createComposition = compose(
   create,
   peopleIsGreaterThanZero,
@@ -69,4 +73,5 @@ const createComposition = compose(
 module.exports = {
   create: traceFunction(createComposition, __filename),
   list: traceFunction(list, __filename),
+  read: traceFunction(read, __filename),
 };

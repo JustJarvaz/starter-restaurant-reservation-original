@@ -29,21 +29,9 @@ function Menu() {
             </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/customers">
-              <span className="oi oi-people" />
-              &nbsp;Customers
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to="/tables">
+            <Link className="nav-link" to="/tables/new">
               <span className="oi oi-layers" />
-              &nbsp;Tables
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to="/settings">
-              <span className="oi oi-list-rich" />
-              &nbsp;Settings
+              &nbsp;New Table
             </Link>
           </li>
         </ul>

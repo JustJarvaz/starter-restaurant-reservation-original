@@ -9,7 +9,7 @@
 
 All the following questions should be answered in the affirmative for the project to be passed.
 
-- Are all the tests passing in Qualified?
+- Are all the tests passing?
 - Are all business rules enforced in UI, API, and (if possible) the database?
 - Do the Edit and Create components share the same form component?
 - Do all API call make use of an AbortController?

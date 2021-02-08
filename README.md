@@ -10,13 +10,10 @@ There are no user stories for deployment, it is expected that you will deploy th
 
 As you work through the Node.js, Express & PostgreSQL module, you will be writing code that allows your frontend and backend code to talk to eachother. It will also allow your controllers and services to connect to and query your PostgreSQL database via [Knex](http://knexjs.org/). The table below describes the files and folders in the starter code:
 
-| Folder/file path | Description                                                                      |
-| ---------------- | -------------------------------------------------------------------------------- |
-| `back-end`       | Directs requests to the appropriate routers.                                     |
-| `front-end`      | Starts the server on `localhost:5000` by default.                                |
-| `src/db/`        | A folder where you will add migration and seed files for your database later on. |
-| `src/errors/`    | A folder where you will find several functions for handle various errors         |
-| `.env.sample`    | A sample environment configuration file                                          |
+| Folder/file path | Description                                                      |
+| ---------------- | ---------------------------------------------------------------- |
+| `back-end`       | The backend project, which runs on `localhost:5000` by default.  |
+| `front-end`      | The frontend project, which runs on `localhost:3000` by default. |
 
 This starter code closely follows the best practices and patterns established in the Robust Server Structure module.
 
@@ -24,6 +21,10 @@ This starter code closely follows the best practices and patterns established in
 
 1. Set up four new ElephantSQL database instance - development, test, preview, and production - by following the instructions in the "PostgreSQL: Creating & Deleting Databases" checkpoint.
 1. After setting up your database instances, connect DBeaver to your new database instances by following the instructions in the "PostgreSQL: Installing DBeaver" checkpoint.
+
+### Knex
+
+Run `npx knex` commands from within the `back-end` folder, which is where the `knexfile.js` file is located.
 
 ## Installation
 
@@ -44,7 +45,7 @@ End-to-end tests use browser automation to interact with the application just li
 Once the tests are passing for a given user story, you know you have the necessary functionality.
 
 1. Run `npm test` to run all tests - unit, integration, and end-to-end.
-1. Run `npm run test:back-end` to run unit, integration, and end-to-end tests for the backend.
+1. Run `npm run test:back-end` to run unit, integration, and end-to-end tests for the backend. The logging level for the backend is set to `warn` when running tests and `info` otherwise.
 1. Run `npm run test:front-end` to run unit, integration, and end-to-end tests for the frontend.
 1. Run `npm run test:e2e` to run only the end-to-end tests for the frontend.
 
@@ -97,4 +98,73 @@ so that I know how many customers will arrive at the restaurant on a given day.
 >
 > You do no need to worry about different or changing time zones for the dates or times.
 
-### US-2 TBD
+### US-2 Reservation form validation
+
+Hou
+
+### US-3 Backend reservation validation
+
+Hou
+
+### US-4 Seat reservation
+
+As a restaurant manager
+I want to seat a reservation at a specific table
+so that I know how many occupied and free tables I have in the restaurant.
+
+#### Acceptance Criteria
+
+1. The `/tables/new` page will
+   - have the following required and not-nullable fields.
+     - Table name: `<input name="table_name" />`, which must be at least 2 characters long.
+     - Capacity: the number of people that can be seated at the table, which must be at least 1 person. `<input name="capacity" />`
+   - display a `Submit` button that, when clicked, saves the new table then displays the `/tables` page
+   - display a `Cancel` button that , when clicked, returns the user to the previous page
+1. The `/dasboard` page will
+   - On one side, displays a list all tables for the restaurant sorted by `table_number`. The other side is the list of reservations.
+     - Each table will display "Free" or "Occupied" depending on whether a group is seated at the table.
+   - Display a "Seat now" button on each reservation for the current date only.
+   - Reservations may be seated at any time; before or after the actual reservation time.
+1. The `/reservations/:reservation_id/seat` page will
+   - have the following required and not-nullable fields.
+     - Table number: `<select name="table_id" />` listing only the unoccupied tables.
+     - The text of the option should be `{table.table_name} - {table.capacity}`
+   - have the following validations:
+     - Do not seat a reservation with more people than the capacity of the table.
+   - display a `Submit` button that, when clicked, assigns the table to the reservation then displays the `/dashboard` page
+   - POST to `/tables/:table_id/seat/:reservation_id`. The tests do not check the body returned by this POST.
+   - display a `Cancel` button that , when clicked, returns the user to the previous page
+1. The `tables` table will be seeded with the following tables:
+   - `Bar #1` & `Bar #2` Each with a capacity of 1.
+   - `#1` & `#2`. Each with a capacity of 6.
+
+### US-5 Finish an occupied table
+
+As a restaurant manager
+I want to free up an occupied table when the guests leave
+so that I can seat more guests at that table.
+
+#### Acceptance Criteria
+
+1. The `/dasboard` page will
+   - Display a "Finish" button on each occupied table.
+   - Clicking the "Finish" button will display the following confirmation: "Is this table ready to seat new guests? This cannot be undone."
+     - If the user selects "Ok", the table is listed as available in the table list.
+     - If the user selects "Cancel" no changes are made.
+
+### US-6 Seat a walk-in group
+
+As a restaurant manager
+I want to seat a walk-in group (without a reservation) at a specific table
+so that I know how many occupied and free tables I have in the restaurant.
+
+#### Acceptance Criteria
+
+1. The `/tables/:table_id/seat` page will
+   - have the following required and not-nullable fields.
+     - First name: `<input name="first_name" />`
+     - Last name: `<input name="last_name" />`
+     - Mobile number: `<input name="mobile_number" />`
+     - Number of people in the party, which must be at least 1 person. `<input name="people" />`
+   - display a `Submit` button that, when clicked, saves a new reservation record for the current date and time and saves the table assignment, then displays the `/dashboard` page
+   - display a `Cancel` button that , when clicked, returns the user to the previous page.

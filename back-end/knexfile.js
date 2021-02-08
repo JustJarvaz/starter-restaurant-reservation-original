@@ -4,6 +4,7 @@ const {
   DATABASE_URL = "postgresql://postgres@localhost/postgres",
   DATABASE_URL_DEVELOPMENT = "postgresql://postgres@localhost/postgres",
   DATABASE_URL_TEST = "postgresql://postgres@localhost/postgres",
+  DEBUG,
 } = process.env;
 
 module.exports = {
@@ -17,6 +18,7 @@ module.exports = {
     seeds: {
       directory: path.join(__dirname, "src", "db", "seeds"),
     },
+    debug: !!DEBUG,
   },
   test: {
     client: "postgresql",
@@ -28,6 +30,7 @@ module.exports = {
     seeds: {
       directory: path.join(__dirname, "src", "db", "seeds"),
     },
+    debug: !!DEBUG,
   },
   production: {
     client: "postgresql",
@@ -39,5 +42,6 @@ module.exports = {
     seeds: {
       directory: path.join(__dirname, "src", "db", "seeds"),
     },
+    debug: !!DEBUG,
   },
 };

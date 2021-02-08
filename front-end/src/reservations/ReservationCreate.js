@@ -10,12 +10,11 @@ function ReservationCreate() {
 
   const [error, setError] = useState(null);
 
-  function submitHandler(dish) {
+  function submitHandler(reservation) {
     const abortController = new AbortController();
     setError(null);
-    createReservation(dish, abortController.signal)
+    createReservation(reservation, abortController.signal)
       .then((savedReservation) => {
-        console.log("savedReservation", savedReservation);
         history.push(
           `/dashboard?date=${formatAsDate(savedReservation.reservation_date)}`
         );
