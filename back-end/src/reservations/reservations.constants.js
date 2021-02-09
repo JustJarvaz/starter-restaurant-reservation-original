@@ -19,6 +19,7 @@ const ERROR_MESSAGES = {
   invalidDate: "Reservation date/time must occur in the future",
   invalidTime: "Please select a valid time",
   invalidDay: "The restaurant is closed on the selected day",
+  invalidPhone: "The phone number must be a ten-digit US-based phone number",
 };
 
 module.exports = { ERROR_MESSAGES, RESTAURANT_SCHEDULE, WEEKDAYS };

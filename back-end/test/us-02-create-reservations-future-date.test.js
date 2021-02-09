@@ -10,9 +10,11 @@ describe("Create reservations future date", () => {
       .then(() => knex.migrate.rollback(null, true))
       .then(() => knex.migrate.latest());
   });
+
   beforeEach(() => {
     return knex.seed.run();
   });
+
   afterAll(async () => {
     return await knex.migrate.rollback(null, true).then(() => knex.destroy());
   });
@@ -25,7 +27,7 @@ describe("Create reservations future date", () => {
         mobile_number: "800-555-1212",
         reservation_date: "1999-01-01",
         reservation_time: "17:30",
-        people: 0,
+        people: 3,
       };
 
       const response = await request(app)
@@ -40,9 +42,9 @@ describe("Create reservations future date", () => {
         first_name: "first",
         last_name: "last",
         mobile_number: "800-555-1212",
-        reservation_date: "2050-01-03",
+        reservation_date: "2030-01-01",
         reservation_time: "17:30",
-        people: 0,
+        people: 3,
       };
 
       const response = await request(app)

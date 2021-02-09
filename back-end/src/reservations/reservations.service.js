@@ -13,6 +13,7 @@ const tableName = "reservations";
 
 const validDate = /\d\d\d\d-\d\d-\d\d/;
 const validTime = /\d\d:\d\d/;
+const validPhone = /^\d{10}$/;
 
 function peopleIsGreaterThanZero(reservation = {}) {
   const { people } = reservation;
@@ -63,7 +64,7 @@ function isFutureDate(reservation) {
 
 function isWorkingDay(reservation) {
   const { reservation_date = "" } = reservation;
-  const day = new Date(date).getUTCDay();
+  const day = new Date(reservation_date).getUTCDay();
   if (RESTAURANT_SCHEDULE.closedDays.includes(day)) {
     const error = new Error(ERROR_MESSAGES.invalidDay);
     error.status = 400;
@@ -74,7 +75,7 @@ function isWorkingDay(reservation) {
 
 function isWithinEligibleTimeframe(reservation) {
   let { reservation_time = "" } = reservation;
-  reservation_time = convertISOTimeToMinutes(time);
+  reservation_time = convertISOTimeToMinutes(reservation_time);
   if (
     reservation_time < convertISOTimeToMinutes(RESTAURANT_SCHEDULE.openTime) ||
     reservation_time >
@@ -87,6 +88,15 @@ function isWithinEligibleTimeframe(reservation) {
   }
 
   return reservation;
+}
+
+function isValidMobileNumber(phone) {
+  if (!phone.match(validPhone)) {
+    const error = new Error(ERROR_MESSAGES.invalidPhone);
+    error.status = 400;
+    throw error;
+  }
+  return phone;
 }
 
 function create(newReservation) {
@@ -105,6 +115,12 @@ function read(reservation_id) {
   return knex(tableName).where({ reservation_id }).first();
 }
 
+function search(phone) {
+  return knex(tableName)
+    .where("mobile_number", phone)
+    .orderBy("reservation_date");
+}
+
 const createComposition = compose(
   create,
   isWithinEligibleTimeframe,
@@ -118,8 +134,11 @@ const createComposition = compose(
   hasProperty("first_name")
 );
 
+const searchComposition = compose(search, isValidMobileNumber);
+
 module.exports = {
   create: traceFunction(createComposition, __filename),
   list: traceFunction(list, __filename),
   read: traceFunction(read, __filename),
+  search: traceFunction(searchComposition, __filename),
 };

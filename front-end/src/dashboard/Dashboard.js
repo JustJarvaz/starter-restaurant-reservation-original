@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { listReservations, listTables } from "../utils/api";
+import { listReservations, searchReservations, listTables } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { Link } from "react-router-dom";
 import { next, previous, today } from "../utils/dates";
 import TablesList from "./TablesList";
 import ReservationsList from "./ReservationsList";
+import ReservationsSearch from "./ReservationsSearch";
 
 function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
   const [reservationsError, setReservationsError] = useState(null);
+
+  const [searchValue, setSearchValue] = useState("");
 
   const [tables, setTables] = useState([]);
   const [tablesError, setTablesError] = useState(null);
@@ -27,15 +30,40 @@ function Dashboard({ date }) {
     return () => abortController.abort();
   }
 
+  async function loadSearchResults() {
+    const abortController = new AbortController();
+    setReservationsError(null);
+    searchReservations(searchValue, abortController.signal)
+      .then(setReservations)
+      .catch(setReservationsError);
+
+    listTables(abortController.signal).then(setTables).catch(setTablesError);
+
+    return () => abortController.abort();
+  }
+
+  function renderSubheading() {
+    return searchValue ? (
+      <h4 className="box-title mb-0">
+        Showing all reservations for {searchValue}
+      </h4>
+    ) : (
+      <h4 className="box-title mb-0">Reservations for {date}</h4>
+    );
+  }
   return (
     <main>
       <h1>Dashboard</h1>
       <div className="row">
         <div className="col-md-6 col-lg-6 col-sm-12">
-          <div className="d-md-flex mb-3">
-            <h4 className="box-title mb-0">Reservations for {date}</h4>
-          </div>
+          <div className="d-md-flex mb-3">{renderSubheading()}</div>
           <ErrorAlert error={reservationsError} />
+          <ReservationsSearch
+            loadSearchResults={loadSearchResults}
+            searchValue={searchValue}
+            setSearchValue={setSearchValue}
+          />
+          {reservations.length === 0 && <p>No reservation found</p>}
           <div
             className="btn-group"
             role="group"

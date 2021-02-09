@@ -24,7 +24,7 @@ function ReservationForm({
       onSubmit(reservation);
       setStatus(STATUS.submitted);
     }
-  }, [errors]);
+  }, [errors, isValid, onSubmit, reservation, status]);
 
   function changeHandler({ target: { name, value } }) {
     setReservation((previousReservation) => ({

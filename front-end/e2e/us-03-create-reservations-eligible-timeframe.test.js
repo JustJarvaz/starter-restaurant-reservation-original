@@ -6,7 +6,7 @@ const {
   INVALID_TIMES,
   generateInvalidTime,
 } = require("./utils/generateInvalidTime");
-const generateValidTime = require("./utils/generateValidTime");
+
 const generateNextDate = require("./utils/generateNextDate");
 
 const baseURL = process.env.BASE_URL || "http://localhost:3000";

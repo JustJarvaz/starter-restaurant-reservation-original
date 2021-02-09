@@ -66,9 +66,21 @@ async function read(req, res) {
   req.log.trace({ __filename, methodName: read.name, return: true, data });
 }
 
+async function search(req, res) {
+  req.log.debug({ __filename, methodName: list.name });
+  const data = await service.search(req.query.phone, req.log);
+
+  res.json({
+    data,
+  });
+
+  req.log.trace({ __filename, methodName: list.name, return: true, data });
+}
+
 module.exports = {
   create: asyncErrorBoundary(create),
   list: asyncErrorBoundary(list),
   read: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(read)],
   reservationExists: asyncErrorBoundary(reservationExists),
+  search: asyncErrorBoundary(search),
 };

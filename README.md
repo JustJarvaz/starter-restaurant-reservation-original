@@ -187,7 +187,7 @@ so that I know how many occupied and free tables I have in the restaurant.
    - display a `Submit` button that, when clicked, saves a new reservation record for the current date and time and saves the table assignment, then displays the `/dashboard` page
    - display a `Cancel` button that , when clicked, returns the user to the previous page.
 
-### US-7 Search for a reservation by phone-number
+### US-7 Search for a reservation by phone number
 
 As a restaurant manager
 I want to search a reservation by phone number
@@ -197,9 +197,9 @@ so that I can easily and quickly access a customer's reservation.
 
 1. The `/dashboard` page will
    - Display a search bar `<input name="search_bar" />` that displays the placeholder text: "Enter a customer's phone number"
-   - Display a "Find" button next to the search bar. Clicking on the "Find" button will first validate that the input has the correct phone number format (i.e., ten digit US-based phone numbers only).
-     - If the input is not correctly formatted, display an error message.
-     - If the input is correctly formatted, then the system will look for the reservation(s) in the database and display all matched records on the `/dashboard` page.
+   - Display a "Find" button next to the search bar. Clicking on the "Find" button will submit a request to the server.
+     - If the search input is not correctly formatted (i.e., not a ten digit phone number), display an error message that starts with `"Error: ..."`.
+     - If the search input is correctly formatted, then the system will look for the reservation(s) in the database and display all matched records on the `/dashboard` page, if any. If there are no records found, then display a message `No reservation found`.
 
 ### US-8 Make changes to an existing reservation
 

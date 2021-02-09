@@ -10,9 +10,11 @@ describe("Create reservations eligible timeframe", () => {
       .then(() => knex.migrate.rollback(null, true))
       .then(() => knex.migrate.latest());
   });
+
   beforeEach(() => {
     return knex.seed.run();
   });
+
   afterAll(async () => {
     return await knex.migrate.rollback(null, true).then(() => knex.destroy());
   });
@@ -25,7 +27,7 @@ describe("Create reservations eligible timeframe", () => {
         mobile_number: "800-555-1212",
         reservation_date: "2050-01-04",
         reservation_time: "09:30",
-        people: 0,
+        people: 3,
       };
 
       let response = await request(app)
