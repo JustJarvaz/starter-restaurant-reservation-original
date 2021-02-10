@@ -29,6 +29,7 @@ function peopleIsGreaterThanZero(reservation = {}) {
 
 function hasReservationDate(reservation = {}) {
   const { reservation_date = "" } = reservation;
+
   if (reservation_date.match(validDate)) {
     return reservation;
   }
@@ -121,6 +122,14 @@ function search(phone) {
     .orderBy("reservation_date");
 }
 
+function destroy(reservationId) {
+  return knex(tableName).where({ reservation_id: reservationId }).del();
+}
+
+function update({ reservation_id, ...reservation }) {
+  return knex(tableName).where({ reservation_id }).update(reservation, "*");
+}
+
 const createComposition = compose(
   create,
   isWithinEligibleTimeframe,
@@ -136,9 +145,24 @@ const createComposition = compose(
 
 const searchComposition = compose(search, isValidMobileNumber);
 
+const updateComposition = compose(
+  update,
+  isWithinEligibleTimeframe,
+  isWorkingDay,
+  isFutureDate,
+  peopleIsGreaterThanZero,
+  hasReservationTime,
+  hasReservationDate,
+  hasProperty("mobile_number"),
+  hasProperty("last_name"),
+  hasProperty("first_name")
+);
+
 module.exports = {
   create: traceFunction(createComposition, __filename),
   list: traceFunction(list, __filename),
   read: traceFunction(read, __filename),
   search: traceFunction(searchComposition, __filename),
+  delete: traceFunction(destroy, __filename),
+  update: traceFunction(updateComposition, __filename),
 };

@@ -24,7 +24,7 @@ describe("Search reservation by phone number", () => {
       const response = await request(app)
         .get("/reservations/search?phone=1231231234")
         .set("Accept", "application/json");
-      console.log(response.body.data);
+
       expect(response.body.error).toBeUndefined();
       expect(response.body.data).toHaveLength(2);
     });

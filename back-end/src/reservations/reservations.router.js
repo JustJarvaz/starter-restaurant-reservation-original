@@ -10,6 +10,11 @@ router
 
 router.route("/search").get(controller.search).all(methodNotAllowed);
 
-router.route("/:reservation_id").get(controller.read).all(methodNotAllowed);
+router
+  .route("/:reservation_id")
+  .get(controller.read)
+  .delete(controller.delete)
+  .put(controller.update)
+  .all(methodNotAllowed);
 
 module.exports = router;

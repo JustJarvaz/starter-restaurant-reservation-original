@@ -210,11 +210,11 @@ so that I know how many customers will arrive at the restaurant on a given day.
 #### Acceptance Criteria
 
 1. The `/dashboard` page will
+   - Display an "Edit" button next to each reservation
+     - Clicking the "Edit" button will navigate the user to the `/reservations/update` page, which will display the reservation form with the existing reservation data filled in
+       - If the user selects "Submit", the reservation is updated, then the user is taken back to the `/dashboard` page.
+       - If the user selects "Cancel" no changes are made.
    - Display a "Cancel" button next to each reservation
      - Clicking the "Cancel" button will display the following confirmation: "Do you want to cancel this reservation? This cannot be undone."
-       - If the user selects "Ok", the reservation is removed from the page and deleted from the database.
-       - If the user selects "Cancel" no changes are made.
-   - Display an "Update" button next to each reservation
-     - Clicking the "Update" button will navigate the user to the `/reservations/update` page, which will display the reservation form with the existing reservation data filled in
-       - If the user selects "Submit", the reservation is updated, then the user is taken back to the `/dashboard` page.
+       - If the user selects "Ok", the reservation is removed from the page and deleted from the database, the confirmation disappears, and the results on the `/dashboard` page are refreshed.
        - If the user selects "Cancel" no changes are made.
