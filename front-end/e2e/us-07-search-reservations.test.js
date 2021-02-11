@@ -9,7 +9,7 @@ const onPageConsole = (msg) =>
     console.log(`<LOG::page console ${msg.type()}>`, ...eventJson)
   );
 
-describe("/reservations/search", () => {
+describe("US-07 - Search reservations - E2E", () => {
   let page;
   let browser;
 
@@ -28,7 +28,7 @@ describe("/reservations/search", () => {
     await browser.close();
   });
 
-  describe("us-07 search reservations", () => {
+  describe("/reservations/search", () => {
     it("entering an invalid phone number and submitting displays an error message", async () => {
       await page.type("input[name=reservations_search]", "123123asdf");
 

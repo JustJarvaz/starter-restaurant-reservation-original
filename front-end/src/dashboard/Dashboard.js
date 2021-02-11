@@ -104,7 +104,11 @@ function Dashboard({ date }) {
                 </tr>
               </thead>
               <tbody>
-                <ReservationsList reservations={reservations} />
+                <ReservationsList
+                  loadDashboard={loadDashboard}
+                  reservations={reservations}
+                  setReservationsError={setReservationsError}
+                />
               </tbody>
             </table>
           </div>

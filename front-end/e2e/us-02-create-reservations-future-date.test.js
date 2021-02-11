@@ -21,7 +21,7 @@ describe("/reservations/new page", () => {
   beforeEach(async () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    page.on("console", onPageConsole);
+    // page.on("console", onPageConsole);
     await page.goto(`${baseURL}/reservations/new`, { waitUntil: "load" });
   });
 

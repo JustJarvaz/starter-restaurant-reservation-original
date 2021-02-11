@@ -13,7 +13,6 @@ const onPageConsole = (msg) =>
   Promise.all(msg.args().map((event) => event.jsonValue())).then((eventJson) =>
     console.log(`<LOG::page console ${msg.type()}>`, ...eventJson)
   );
-`/tables/new`;
 
 describe("US-04 - Seat reservation - E2E", () => {
   let page;

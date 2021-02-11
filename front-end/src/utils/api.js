@@ -123,6 +123,36 @@ export async function deleteReservation(reservationId, signal) {
 }
 
 /**
+ * Update an existing reservation
+ * @returns {Promise<[reservation]>}
+ *  a promise that resolves to the newly updated reservation.
+ */
+export async function updateReservation(reservation, signal) {
+  const { reservation_date, reservation_time, reservation_id } = reservation;
+  const url = `${API_BASE_URL}/reservations/${reservation_id}`;
+
+  const data = {
+    ...reservation,
+    reservation_date: Array.isArray(reservation_date)
+      ? reservation_date[0]
+      : reservation_date,
+    reservation_time: Array.isArray(reservation_time)
+      ? reservation_time[0]
+      : reservation_time,
+  };
+
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({ data }),
+    signal,
+  };
+  const response = await fetchJson(url, options, reservation);
+
+  return Array.isArray(response) ? response[0] : response;
+}
+
+/**
  * Creates a new table
  * @returns {Promise<[table]>}
  *  a promise that resolves to the newly created table.

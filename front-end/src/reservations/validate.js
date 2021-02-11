@@ -34,6 +34,15 @@ export default function validate({
   reservation_time: reservationTime,
 }) {
   const errors = {};
+
+  reservationDate = Array.isArray(reservationDate)
+    ? reservationDate[0]
+    : reservationDate;
+
+  reservationTime = Array.isArray(reservationTime)
+    ? reservationTime[0]
+    : reservationTime;
+
   isFutureDate(errors, reservationDate, reservationTime);
   isWorkingDay(errors, reservationDate);
   isWithinEligibleTimeframe(errors, reservationTime);
