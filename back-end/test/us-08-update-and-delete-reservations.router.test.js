@@ -19,42 +19,57 @@ describe("US-08 - Update and delete reservations", () => {
     return await knex.migrate.rollback(null, true).then(() => knex.destroy());
   });
 
-  const expected = {
-    first_name: "Mouse",
-    last_name: "Whale",
-    mobile_number: "1231231235",
-    reservation_date: "2026-12-30",
-    reservation_time: "18:00",
-    people: 2,
-  };
-
   describe("PUT /reservations/:reservation_id", () => {
     test("returns 404 if reservation does not exist", async () => {
+      const data = {
+        first_name: "Mouse",
+        last_name: "Whale",
+        mobile_number: "1231231235",
+        reservation_date: "2026-12-30",
+        reservation_time: "18:00",
+        people: 2,
+      };
+
       const response = await request(app)
         .put("/reservations/999999")
         .set("Accept", "application/json")
-        .send({ data: expected });
+        .send({ data });
 
       expect(response.body.error).not.toBeUndefined();
       expect(response.status).toBe(404);
     });
 
     test("updates the reservation", async () => {
+      const expected = {
+        first_name: "Mouse",
+        last_name: "Whale",
+        mobile_number: "1231231235",
+        reservation_date: "2026-12-30",
+        reservation_time: "18:00",
+        people: 2,
+      };
+
+      const reservation = await knex("reservations")
+        .where("reservation_id", 1)
+        .first();
+
+      Object.entries(expected).forEach(
+        ([key, value]) => (reservation[key] = value)
+      );
+
       const response = await request(app)
         .put("/reservations/1")
         .set("Accept", "application/json")
-        .send({ data: expected });
+        .send({ data: reservation });
 
       expect(response.body.error).toBeUndefined();
-
-      const reservation = response.body.data[0];
-      expect(reservation.first_name).toBe(expected.first_name);
-      expect(reservation.last_name).toBe(expected.last_name);
-      expect(reservation.mobile_phone).toBe(expected.mobile_phone);
-      expect(reservation.people).toBe(expected.people);
-      expect(reservation.reservation_date).toMatch(expected.reservation_date);
-      expect(reservation.reservation_time).toMatch(expected.reservation_time);
-
+      expect(response.body.data).toEqual(
+        expect.objectContaining({
+          ...expected,
+          reservation_date: expect.stringMatching(expected.reservation_date),
+          reservation_time: expect.stringMatching(expected.reservation_time),
+        })
+      );
       expect(response.status).toBe(200);
     });
 

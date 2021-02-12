@@ -3,17 +3,14 @@ const hasProperty = require("../errors/hasProperty");
 const compose = require("../utils/compose");
 const convertISOTimeToMinutes = require("../utils/convertISOTimeToMinutes");
 const traceFunction = require("../logging/traceFunction");
-const {
-  ERROR_MESSAGES,
-  RESTAURANT_SCHEDULE,
-  WEEKDAYS,
-} = require("./reservations.constants.js");
 
 const tableName = "reservations";
 
 const validDate = /\d\d\d\d-\d\d-\d\d/;
 const validTime = /\d\d:\d\d/;
 const validPhone = /^\d{10}$/;
+
+const CLOSED_DAYS = [2]; // 0 - Sunday, 1 - Monday, 2 - Tuesday, 3 - Wednesday, 4 - Thursday, 5 - Friday, 6 - Saturday
 
 function peopleIsGreaterThanZero(reservation = {}) {
   const { people } = reservation;
@@ -55,10 +52,19 @@ function hasReservationTime(reservation = {}) {
 function isFutureDate(reservation) {
   const { reservation_date, reservation_time } = reservation;
 
-  if (new Date(`${reservation_date} ${reservation_time}`) > new Date()) {
+  if (
+    new Date(
+      `${reservation_date.match(validDate)}T${reservation_time.match(
+        validTime
+      )}`
+    ) > new Date()
+  ) {
     return reservation;
   }
-  const error = new Error(ERROR_MESSAGES.invalidDate);
+
+  const error = new Error(
+    `Reservation date/time must occur in the future: ${reservation_date} ${reservation_time}`
+  );
   error.status = 400;
   throw error;
 }
@@ -66,8 +72,8 @@ function isFutureDate(reservation) {
 function isWorkingDay(reservation) {
   const { reservation_date = "" } = reservation;
   const day = new Date(reservation_date).getUTCDay();
-  if (RESTAURANT_SCHEDULE.closedDays.includes(day)) {
-    const error = new Error(ERROR_MESSAGES.invalidDay);
+  if (CLOSED_DAYS.includes(day)) {
+    const error = new Error("The restaurant is closed on the selected day");
     error.status = 400;
     throw error;
   }
@@ -75,15 +81,14 @@ function isWorkingDay(reservation) {
 }
 
 function isWithinEligibleTimeframe(reservation) {
-  let { reservation_time = "" } = reservation;
-  reservation_time = convertISOTimeToMinutes(reservation_time);
+  const reservation_time = convertISOTimeToMinutes(
+    reservation.reservation_time
+  );
   if (
-    reservation_time < convertISOTimeToMinutes(RESTAURANT_SCHEDULE.openTime) ||
-    reservation_time >
-      convertISOTimeToMinutes(RESTAURANT_SCHEDULE.closeTime) -
-        RESTAURANT_SCHEDULE.closeTimeBuffer
+    reservation_time < convertISOTimeToMinutes("10:30") ||
+    reservation_time > convertISOTimeToMinutes("22:30") - 60
   ) {
-    const error = new Error(ERROR_MESSAGES.invalidTime);
+    const error = new Error("Please select a valid time");
     error.status = 400;
     throw error;
   }
@@ -93,7 +98,9 @@ function isWithinEligibleTimeframe(reservation) {
 
 function isValidMobileNumber(phone) {
   if (!phone.match(validPhone)) {
-    const error = new Error(ERROR_MESSAGES.invalidPhone);
+    const error = new Error(
+      "The phone number must be a ten-digit US-based phone number"
+    );
     error.status = 400;
     throw error;
   }
@@ -122,12 +129,15 @@ function search(phone) {
     .orderBy("reservation_date");
 }
 
-function destroy(reservationId) {
-  return knex(tableName).where({ reservation_id: reservationId }).del();
+function destroy(reservation_id) {
+  return knex(tableName).where({ reservation_id }).del();
 }
 
-function update({ reservation_id, ...reservation }) {
-  return knex(tableName).where({ reservation_id }).update(reservation, "*");
+function update(reservation) {
+  return knex(tableName)
+    .where({ reservation_id: reservation.reservation_id })
+    .update(reservation, "*")
+    .then((records) => records[0]);
 }
 
 const createComposition = compose(

@@ -92,6 +92,7 @@ async function update(req, res) {
   req.log.debug({ __filename, methodName: list.name });
 
   const { reservation_id } = res.locals.reservation;
+  req.body.data.reservation_id = reservation_id;
 
   const data = await service.update(req.body.data, req.log);
 
