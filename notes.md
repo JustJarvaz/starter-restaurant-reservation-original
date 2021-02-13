@@ -1,6 +1,7 @@
 # NOTES for Dale and Hou ONLY:
 
-**NB**: This is repo will become the solution, which is not visible to the student.
+**NB**: This is repo will become the solution, which is not visible to the student. The repo will broken out into two separate front-end and back-end repos.
+
 As a result, we don't need to worry about whether the student will understand the code in this project.
 
 > Roughly 10 one-day user stories for a proficient student
@@ -15,26 +16,20 @@ As a result, we don't need to worry about whether the student will understand th
 
 ## Rubric
 
-See [./rubric.md](./rubric.md)
+See [./rubric.md](./rubric.md). Update the rubric as you complete each user story.
 
-## Open Questions
+## Housekeeping
 
-- Can Qualified run and test a mono-repo?
+- Create starter-code repos for front-end and back-end repos (Dale is investigating Github actions)
 
-> No
+  - Make it possible to run each test suite at a time, and display test output to more clearly show which tests have failed (and possibly hide e2e test logs for passing tests).
 
-- Does NPM correctly handle a mono-repo on Windows?
-
-> No. `npm --previx ./front-end install` has a [bug](https://github.com/npm/cli/issues/1290) that installs binary scripts in the wrong location.
->
-> Before release to the students we will have to find an alternative. Most likely solution is to split the repositories.
+- Update final-capstone checkpoints with any additional info, if needed. Link starter repos to web-dev repo
 
 ## Missing content
 
 This section lists things that the student must know about to successfully complete this capstone but may potentially be missing from earlier checkpoints
 
-- Working with a mono-repo
-- Deploying a mono-repo to vercel
 - Using a separate database for testing - DDL did not see a test environment database covered in Knex.
 - Automatically running latest migrations when application starts - didn't see this either
 - e2e tests and screen shots
@@ -49,9 +44,6 @@ When you pick up an item, let the other person know what you are starting.
 
 ### Reservations
 
-- Update reservation
-- Cancel reservation
-- Search for reservation by date
 - Search for reservation by name
 - Search for reservation by mobile number
 - Capture email address for reservation
@@ -89,13 +81,11 @@ When you pick up an item, let the other person know what you are starting.
 
 ### Settings/Restaurant/Company
 
-- specify normal business hours
 - override business hours on specific dates
 - specify normal table configuration
 - override tables on specific dates
 - specify the normal duration for a reservation - may be specific to the number of people
 - override the normal duration for a reservation on specific dates
-- specify the latest reservation time relative to closing - e.g. 60 minutes
 - specify the reservation time increments as 10, 15, or 30 minutes
 - Changing time increment does not impact existing reservations
 - Overriding or Changing business hours displays list of conflicting reservations, if any
