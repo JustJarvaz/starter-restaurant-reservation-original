@@ -1,50 +1,34 @@
-import { WEEKDAYS, RESTAURANT_SCHEDULE, ERROR_MESSAGES } from "./constants";
-import convertISOTimeToMinutes from "../utils/convertISOTimeToMinutes";
+const CLOSED_DAYS = [2];
 
-function isFutureDate(errors, date, time) {
-  if (new Date(`${date} ${time}`) < new Date())
-    errors.date = ERROR_MESSAGES.invalidDate;
-  return errors;
+function convertISOTimeToMinutes(time) {
+  const result = time.split(":").map((part) => parseInt(part));
+  return result[0] * 60 + result[1];
 }
 
-function isWorkingDay(errors, date) {
-  const day = new Date(date).getUTCDay();
-  if (RESTAURANT_SCHEDULE.closedDays.includes(day)) {
-    errors.invalidDay = `${ERROR_MESSAGES.invalidDay}: ${WEEKDAYS[day]}`;
+function isFutureDate({ reservation_date, reservation_time }) {
+  if (new Date(`${reservation_date}T${reservation_time}`) < new Date()) {
+    return new Error("Reservation date/time must occur in the future");
   }
-  return errors;
 }
 
-function isWithinEligibleTimeframe(errors, time) {
-  let reservationTime = convertISOTimeToMinutes(time);
-  if (
-    reservationTime < convertISOTimeToMinutes(RESTAURANT_SCHEDULE.openTime) ||
-    reservationTime >
-      convertISOTimeToMinutes(RESTAURANT_SCHEDULE.closeTime) -
-        RESTAURANT_SCHEDULE.closeTimeBuffer
-  ) {
-    errors.time = ERROR_MESSAGES.invalidTime;
+function isWorkingDay({ reservation_date }) {
+  const day = new Date(reservation_date).getUTCDay();
+  if (CLOSED_DAYS.includes(day)) {
+    return new Error("The restaurant is closed on Tuesday");
   }
-
-  return errors;
 }
 
-export default function validate({
-  reservation_date: reservationDate,
-  reservation_time: reservationTime,
-}) {
-  const errors = {};
+function isWithinEligibleTimeframe({ reservation_time }) {
+  const reservationTime = convertISOTimeToMinutes(reservation_time);
+  if (reservationTime < 630 || reservationTime > 1290) {
+    return new Error("Please select a time between 10:30 and 21:30");
+  }
+}
 
-  reservationDate = Array.isArray(reservationDate)
-    ? reservationDate[0]
-    : reservationDate;
-
-  reservationTime = Array.isArray(reservationTime)
-    ? reservationTime[0]
-    : reservationTime;
-
-  isFutureDate(errors, reservationDate, reservationTime);
-  isWorkingDay(errors, reservationDate);
-  isWithinEligibleTimeframe(errors, reservationTime);
-  return errors;
+export default function validate(reservation) {
+  return [
+    isFutureDate(reservation),
+    isWorkingDay(reservation),
+    isWithinEligibleTimeframe(reservation),
+  ].filter((error) => error !== undefined);
 }

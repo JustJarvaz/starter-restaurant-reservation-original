@@ -187,6 +187,23 @@ describe("US-04 - Seat reservation", () => {
         expect(response.body.error).toContain("capacity");
         expect(response.status).toBe(400);
       });
+      test("returns 400 if table is occupied", async () => {
+        // first, occupy the table
+        const occupyResponse = await request(app)
+          .post(`/tables/${tableOne.table_id}/seat/1`)
+          .set("Accept", "application/json");
+
+        expect(occupyResponse.body.error).toBeUndefined();
+        expect(occupyResponse.status).toBe(200);
+
+        // next, try to assign the table to another reservation
+        const doubleAssignResponse = await request(app)
+          .post(`/tables/${tableOne.table_id}/seat/2`)
+          .set("Accept", "application/json");
+
+        expect(doubleAssignResponse.body.error).toContain("occupied");
+        expect(doubleAssignResponse.status).toBe(400);
+      });
     });
   });
 });

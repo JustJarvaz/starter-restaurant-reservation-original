@@ -104,9 +104,9 @@ I want to allow my customers to make a reservation on a future, working date onl
 
 #### Acceptance criteria
 
-Given that the restaurant mananger is on the `/reservations/new` page,
+Given that the restaurant manager is on the `/reservations/new` page,
 When the restaurant manager submits a reservation form,
-Display an error message if any of the following constraints are violated:
+Display an error message, with `className="alert alert-danger"`, if any of the following constraints are violated:
 
 - The date and time of the reservation must occur some time in the future, on a day the restaurant is open for service (the restaurant is closed on Tuesdays).
 
@@ -117,9 +117,9 @@ I want to allow my customers to make a reservation within an eligible timeframe 
 
 #### Acceptance criteria
 
-Given that the restaurant mananger is on the `/reservations/new` page,
+Given that the restaurant manager is on the `/reservations/new` page,
 When the restaurant manager submits a reservation form,
-Display an error message if the following constraints are violated:
+Display an error message, with `className="alert alert-danger"`, if the following constraints are violated:
 
 - The reservation can only be made during normal business hours (i.e., between **10:30AM** and **10:30PM**),
 - The latest reservation time must _not_ occur within 60 minutes of the close time, so any reservation made between **10:30AM** (inclusive) and **9:30PM** (inclusive) will be honored.
@@ -142,6 +142,7 @@ so that I know how many occupied and free tables I have in the restaurant.
    - On one side, displays a list all tables for the restaurant sorted by `table_number`. The other side is the list of reservations.
      - Each table will display "Free" or "Occupied" depending on whether a group is seated at the table.
    - Display a "Seat now" button on each reservation for the current date only.
+   - the "Seat now" button will be disabled or hidden if the reservation is already assigned to a table.
    - Reservations may be seated at any time; before or after the actual reservation time.
 1. The `/reservations/:reservation_id/seat` page will
    - have the following required and not-nullable fields.
@@ -150,8 +151,10 @@ so that I know how many occupied and free tables I have in the restaurant.
    - have the following validations:
      - Do not seat a reservation with more people than the capacity of the table.
    - display a `Submit` button that, when clicked, assigns the table to the reservation then displays the `/dashboard` page
-   - POST to `/tables/:table_id/seat/:reservation_id`. The tests do not check the body returned by this POST.
-   - display a `Cancel` button that , when clicked, returns the user to the previous page
+   - POST to `/tables/:table_id/seat/:reservation_id` save the table assignment. The tests do not check the body returned by this POST.
+   - if the table capacity is less than the number of people in the reservation return 400 with an error message.
+   - if the table is occupied return 400 with an error message.
+   - display a `Cancel` button that, when clicked, returns the user to the previous page
 1. The `tables` table will be seeded with the following tables:
    - `Bar #1` & `Bar #2` Each with a capacity of 1.
    - `#1` & `#2`. Each with a capacity of 6.
@@ -190,16 +193,33 @@ so that I know how many occupied and free tables I have in the restaurant.
 ### US-7 Search for a reservation by phone number
 
 As a restaurant manager
-I want to search a reservation by phone number
+I want to search a reservation by a phone number (partial or complete)
 so that I can easily and quickly access a customer's reservation.
 
 #### Acceptance Criteria
 
-1. The `/dashboard` page will
-   - Display a search bar `<input name="search_bar" />` that displays the placeholder text: "Enter a customer's phone number"
-   - Display a "Find" button next to the search bar. Clicking on the "Find" button will submit a request to the server.
-     - If the search input is not correctly formatted (i.e., not a ten digit phone number), display an error message that starts with `"Error: ..."`.
-     - If the search input is correctly formatted, then the system will look for the reservation(s) in the database and display all matched records on the `/dashboard` page, if any. If there are no records found, then display a message `No reservation found`.
+1. The `/search` page will
+   - Display a search box `<input name="mobile_number" />` that displays the placeholder text: "Enter a customer's phone number"
+   - Display a "Find" button next to the search box.
+   - Clicking on the "Find" button will submit a request to the server (e.g. GET `/reservations?mobile_phone=555-1212`).
+     - then the system will look for the reservation(s) in the database and display all matched records on the `/search` page using the reservations list component as the `/dashboard` page.
+   - If there are no records found after clicking find, then display a message `No reservations found`.
+
+> **Hint** To search for a partial or complete phone number, you should ignore all formatting and search only for the digits.
+> You will need to remove any non-numeric characters from the submitted mobile number and also use the PostgreSQL translate function.
+>
+> The following function will perform the correct search.
+>
+> ```javascript
+> function search(mobile_number) {
+>   return knex("reservations")
+>     .whereRaw(
+>       "translate(mobile_number, '() -', '') like ?",
+>       `%${mobile_number.replace(/\D/g, "")}%`
+>     )
+>     .orderBy("reservation_date");
+> }
+> ```
 
 ### US-8 Make changes to an existing reservation
 
@@ -209,12 +229,13 @@ so that I know how many customers will arrive at the restaurant on a given day.
 
 #### Acceptance Criteria
 
-1. The `/dashboard` page will
+1. The `/dashboard` and the `/search` page will
    - Display an "Edit" button next to each reservation
-     - Clicking the "Edit" button will navigate the user to the `/reservations/update` page, which will display the reservation form with the existing reservation data filled in
-       - If the user selects "Submit", the reservation is updated, then the user is taken back to the `/dashboard` page.
-       - If the user selects "Cancel" no changes are made.
+     - Clicking the "Edit" button will navigate the user to the `/reservations/:reservation_id/edit` page
    - Display a "Cancel" button next to each reservation
      - Clicking the "Cancel" button will display the following confirmation: "Do you want to cancel this reservation? This cannot be undone."
-       - If the user selects "Ok", the reservation is removed from the page and deleted from the database, the confirmation disappears, and the results on the `/dashboard` page are refreshed.
+       - If the user selects "Ok", the reservation is removed from the page and deleted from the database, the confirmation disappears, and the results on the page are refreshed.
        - If the user selects "Cancel" no changes are made.
+1. The `/reservations/:reservation_id/edit` page will display the reservation form with the existing reservation data filled in
+   - If the user selects "Submit", the reservation is updated, then the user is taken back to the previous page.
+   - If the user selects "Cancel" no changes are made.

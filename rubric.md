@@ -33,4 +33,5 @@ If you see any of the following, they could be included in the “areas for impr
 
 - Any non-pure functions that could be changed into pure functions.
 - Any variable or function names that could be improved.
-- Missing use of AbortController and signal to terminate API calls when the user navigates away from a component while it is still loading.
+- Missing use of AbortController and signal to terminate API calls when it is likely for the user navigates away from a component while it is still loading.
+- Improper time zone for dates when using the system close to 00:00 GMT. This will show up in validation when GMT switches to the next date but local time is before 22:30. Change the time on your machine to test locally.  

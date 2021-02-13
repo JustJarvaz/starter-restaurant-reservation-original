@@ -45,7 +45,9 @@ async function create(req, res) {
 async function list(req, res) {
   req.log.debug({ __filename, methodName: list.name });
 
-  const data = await service.list(req.query.date, req.log);
+  const data = await (req.query.mobile_number
+    ? service.search(req.query.mobile_number, req.log)
+    : service.list(req.query.date, req.log));
 
   res.json({
     data,
@@ -66,30 +68,18 @@ async function read(req, res) {
   req.log.trace({ __filename, methodName: read.name, return: true, data });
 }
 
-async function search(req, res) {
-  req.log.debug({ __filename, methodName: list.name });
-
-  const data = await service.search(req.query.phone, req.log);
-
-  res.json({
-    data,
-  });
-
-  req.log.trace({ __filename, methodName: list.name, return: true, data });
-}
-
 async function destroy(req, res) {
-  req.log.debug({ __filename, methodName: list.name });
+  req.log.debug({ __filename, methodName: destroy.name });
 
   const { reservation_id } = res.locals.reservation;
   const data = await service.delete(reservation_id);
   res.sendStatus(204);
 
-  req.log.trace({ __filename, methodName: list.name, return: true, data });
+  req.log.trace({ __filename, methodName: destroy.name, return: true, data });
 }
 
 async function update(req, res) {
-  req.log.debug({ __filename, methodName: list.name });
+  req.log.debug({ __filename, methodName: update.name });
 
   const { reservation_id } = res.locals.reservation;
   req.body.data.reservation_id = reservation_id;
@@ -98,7 +88,7 @@ async function update(req, res) {
 
   res.json({ data });
 
-  req.log.trace({ __filename, methodName: list.name, return: true, data });
+  req.log.trace({ __filename, methodName: update.name, return: true, data });
 }
 
 module.exports = {
@@ -106,7 +96,6 @@ module.exports = {
   list: asyncErrorBoundary(list),
   read: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(read)],
   reservationExists: asyncErrorBoundary(reservationExists),
-  search: asyncErrorBoundary(search),
   delete: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(destroy)],
   update: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(update)],
 };

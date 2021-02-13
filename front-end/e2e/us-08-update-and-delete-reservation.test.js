@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
+const { createReservation } = require("./api");
 const fsPromises = fs.promises;
 
 const baseURL = process.env.BASE_URL || "http://localhost:3000";
@@ -12,23 +13,23 @@ const onPageConsole = (msg) =>
 describe("US-08 - Update and delete reservation - E2E", () => {
   let page;
   let browser;
+  let reservation;
+
   const dashboardTestPath = `${baseURL}/dashboard?date=2025-01-02`;
 
   beforeAll(async () => {
     await fsPromises.mkdir("./.screenshots", { recursive: true });
     browser = await puppeteer.launch();
     page = await browser.newPage();
-    await page.goto(`${baseURL}/reservations/new`, { waitUntil: "load" });
-    await page.type("input[name=first_name]", "James");
-    await page.type("input[name=last_name]", "Doe");
-    await page.type("input[name=mobile_number]", "555-1212");
-    await page.type("input[name=reservation_date]", "01022025");
-    await page.type("input[name=reservation_time]", "1330");
-    await page.type("input[name=people]", "2");
-    await Promise.all([
-      page.click("[type=submit]"),
-      page.waitForNavigation({ waitUntil: "networkidle0" }),
-    ]);
+
+    reservation = await createReservation({
+      first_name: "James",
+      last_name: Date.now().toString(10),
+      mobile_number: "555-1212",
+      reservation_date: "2025-01-02",
+      reservation_time: "14:00",
+      people: 2,
+    });
   });
 
   beforeEach(async () => {
@@ -40,7 +41,7 @@ describe("US-08 - Update and delete reservation - E2E", () => {
   });
 
   describe("/dashboard", () => {
-    it("clicking on the Edit button takes the user to the /reservations/update/:reservation_id page", async () => {
+    it("clicking on the Edit button takes the user to the /reservations/:reservation_id/edit page", async () => {
       await page.goto(dashboardTestPath, {
         waitUntil: "networkidle0",
       });
@@ -68,27 +69,21 @@ describe("US-08 - Update and delete reservation - E2E", () => {
         fullPage: true,
       });
 
-      await expect(page.url()).toContain("/reservations/update");
+      await expect(page.url()).toMatch(/reservations\/\d+\/edit/);
     });
   });
-  describe("/reservations/update/:reservation_id", () => {
+
+  describe("/reservations/:reservation_id/edit", () => {
     beforeEach(async () => {
-      await page.goto(dashboardTestPath, {
+      await page.goto(`${baseURL}/dashboard`, {
         waitUntil: "networkidle0",
       });
-
-      const [editButton] = await page.$x(
-        "//a[contains(translate(., 'ACDEFGHIJKLMNOPQRSTUVWXYZ', 'acdefghijklmnopqrstuvwxyz'), 'edit')]"
+      await page.goto(
+        `${baseURL}/reservations/${reservation.reservation_id}/edit`,
+        {
+          waitUntil: "networkidle0",
+        }
       );
-
-      await Promise.all([
-        editButton.click(),
-        page.waitForNavigation({ waitUntil: "networkidle0" }),
-      ]);
-
-      await page.goto(`${page.url()}`, {
-        waitUntil: "networkidle0",
-      });
     });
 
     it("canceling form returns to the previous page", async () => {
@@ -143,10 +138,6 @@ describe("US-08 - Update and delete reservation - E2E", () => {
 
       await expect(page.url()).toContain("/dashboard");
 
-      await page.goto(dashboardTestPath, {
-        waitUntil: "networkidle0",
-      });
-
       await page.screenshot({
         path: ".screenshots/us-08-edit-reservation-submit-after.png",
         fullPage: true,
@@ -156,7 +147,7 @@ describe("US-08 - Update and delete reservation - E2E", () => {
     });
   });
 
-  describe("reservation delete", () => {
+  describe("dashboard cancel button", () => {
     it("deletes a reservation", async () => {
       await page.goto(dashboardTestPath, {
         waitUntil: "networkidle0",

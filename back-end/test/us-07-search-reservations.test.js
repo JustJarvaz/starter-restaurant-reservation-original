@@ -19,23 +19,23 @@ describe("Search reservation by phone number", () => {
     return await knex.migrate.rollback(null, true).then(() => knex.destroy());
   });
 
-  describe("GET /reservations/search", () => {
-    test("returns reservations for a given phone number", async () => {
+  describe("GET /reservations?mobile_number=...", () => {
+    test("returns reservations for a partial existing phone number", async () => {
       const response = await request(app)
-        .get("/reservations/search?phone=1231231234")
+        .get("/reservations?mobile_number=808")
         .set("Accept", "application/json");
 
       expect(response.body.error).toBeUndefined();
       expect(response.body.data).toHaveLength(2);
     });
 
-    test("returns 400 for an invalid search value", async () => {
+    test("returns empty list for non-existent phone number", async () => {
       const response = await request(app)
-        .get("/reservations/search?phone=12312312asdf")
+        .get("/reservations?mobile_number=518-555-0169")
         .set("Accept", "application/json");
 
-      expect(response.body.error).toBeDefined();
-      expect(response.status).toBe(400);
+      expect(response.body.error).toBeUndefined();
+      expect(response.body.data).toHaveLength(0);
     });
   });
 });

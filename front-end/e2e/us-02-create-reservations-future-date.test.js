@@ -1,7 +1,6 @@
 const puppeteer = require("puppeteer");
 const fs = require("fs");
 const fsPromises = fs.promises;
-const generateNextDate = require("./utils/generateNextDate");
 
 const baseURL = process.env.BASE_URL || "http://localhost:3000";
 
@@ -37,9 +36,8 @@ describe("/reservations/new page", () => {
       await page.type("input[name=people]", "3");
     });
 
-    it("should display an error message if the date/time of the reservation occurs in the past", async () => {
-      await page.focus("input[name=reservation_date]");
-      await page.keyboard.type("12242019");
+    it("should display an error message if the date of the reservation occurs in the past", async () => {
+      await page.type("input[name=reservation_date]", "12242019");
       await page.type("input[name=reservation_time]", "05:30PM");
 
       await page.screenshot({
@@ -52,12 +50,12 @@ describe("/reservations/new page", () => {
         path: ".screenshots/us-02-reservation-is-future-after.png",
       });
 
-      expect(await page.$("[data-test=errors]")).toBeTruthy();
+      const alerts = await page.$$(".alert-danger");
+      expect(alerts.length).toBeGreaterThan(0);
     });
 
-    it("should display an error message if reservation date falls on a non-working day", async () => {
-      await page.focus("input[name=reservation_date]");
-      await page.keyboard.type(generateNextDate(false));
+    it("should display an error message if reservation date falls on a Tuesday", async () => {
+      await page.type("input[name=reservation_date]", "02032026");
       await page.type("input[name=reservation_time]", "05:30PM");
 
       await page.screenshot({
@@ -70,7 +68,8 @@ describe("/reservations/new page", () => {
         path: ".screenshots/us-02-reservation-is-working-day-after.png",
       });
 
-      expect(await page.$("[data-test=errors]")).toBeTruthy();
+      const alerts = await page.$$(".alert-danger");
+      expect(alerts.length).toBeGreaterThan(0);
     });
   });
 });

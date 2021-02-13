@@ -57,20 +57,11 @@ async function fetchJson(url, options, onCancel) {
  * @returns {Promise<[reservation]>}
  *  a promise that resolves to a possibly empty array of reservation saved in the database.
  */
-export async function listReservations(date, signal) {
-  const url = `${API_BASE_URL}/reservations?date=${date}`;
-  return await fetchJson(url, { headers, signal }, [])
-    .then(formatReservationDate)
-    .then(formatReservationTime);
-}
-
-/**
- * Search all existing reservations for a customer.
- * @returns {Promise<[reservation]>}
- *  a promise that resolves to a possibly empty array of reservation saved in the database.
- */
-export async function searchReservations(phone, signal) {
-  const url = `${API_BASE_URL}/reservations/search?phone=${phone}`;
+export async function listReservations(params, signal) {
+  const url = new URL(`${API_BASE_URL}/reservations`);
+  Object.entries(params).forEach(([key, value]) =>
+    url.searchParams.append(key, value.toString())
+  );
   return await fetchJson(url, { headers, signal }, [])
     .then(formatReservationDate)
     .then(formatReservationTime);
@@ -102,24 +93,20 @@ export async function readReservation(reservation_id, signal) {
   return await fetchJson(url, { headers, signal }, {})
     .then((reservation) => formatReservationDate([reservation]))
     .then(formatReservationTime)
-    .then((reservations) =>
-      Array.isArray(reservations) ? reservations[0] : reservations
-    );
+    .then((reservations) => reservations[0]);
 }
 
 /**
  * Deletes the reservation with the specified `reservationId`.
  * @param reservationId
  *  the id of the reservation to delete
- * @param signal
- *  optional AbortController.signal
  * @returns {Promise<null|String>}
  *  a promise that resolves to null or an error message.
  */
-export async function deleteReservation(reservationId, signal) {
+export async function deleteReservation(reservationId) {
   const url = `${API_BASE_URL}/reservations/${reservationId}`;
-  const options = { method: "DELETE", signal, headers };
-  return await fetchJson(url, options);
+  const options = { method: "DELETE", headers };
+  return await fetchJson(url, options, {});
 }
 
 /**

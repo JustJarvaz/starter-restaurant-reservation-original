@@ -1,7 +1,6 @@
 const knex = require("../db/connection");
 const hasProperty = require("../errors/hasProperty");
 const compose = require("../utils/compose");
-const convertISOTimeToMinutes = require("../utils/convertISOTimeToMinutes");
 const traceFunction = require("../logging/traceFunction");
 
 const tableName = "reservations";
@@ -11,6 +10,11 @@ const validTime = /\d\d:\d\d/;
 const validPhone = /^\d{10}$/;
 
 const CLOSED_DAYS = [2]; // 0 - Sunday, 1 - Monday, 2 - Tuesday, 3 - Wednesday, 4 - Thursday, 5 - Friday, 6 - Saturday
+
+function convertISOTimeToMinutes(time = "0:0") {
+  const result = time.split(":").map((part) => parseInt(part));
+  return result[0] * 60 + result[1];
+}
 
 function peopleIsGreaterThanZero(reservation = {}) {
   const { people } = reservation;
@@ -123,9 +127,12 @@ function read(reservation_id) {
   return knex(tableName).where({ reservation_id }).first();
 }
 
-function search(phone) {
+function search(mobile_number) {
   return knex(tableName)
-    .where("mobile_number", phone)
+    .whereRaw(
+      "translate(mobile_number, '() -', '') like ?",
+      `%${mobile_number.replace(/\D/g, "")}%`
+    )
     .orderBy("reservation_date");
 }
 
@@ -153,7 +160,7 @@ const createComposition = compose(
   hasProperty("first_name")
 );
 
-const searchComposition = compose(search, isValidMobileNumber);
+const searchComposition = compose(search);
 
 const updateComposition = compose(
   update,

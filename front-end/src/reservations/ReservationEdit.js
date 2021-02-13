@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
 import ErrorAlert from "../layout/ErrorAlert";
 import { readReservation, updateReservation } from "../utils/api";
 import ReservationForm from "./ReservationForm";
 import { formatAsDate } from "../utils/dates";
 
-function ReservationUpdate() {
+function ReservationEdit() {
   const history = useHistory();
   const { reservation_id } = useParams();
 
-  const [reservation, setReservation] = useState(null);
+  const [reservation, setReservation] = useState({});
   const [reservationError, setReservationError] = useState(null);
 
   useEffect(() => {
@@ -42,19 +42,23 @@ function ReservationUpdate() {
     history.goBack();
   }
 
+  const child = reservation.reservation_id ? (
+    <ReservationForm
+      initialState={reservation}
+      onSubmit={submitHandler}
+      onCancel={cancelHandler}
+    />
+  ) : (
+    <p>Loading...</p>
+  );
+
   return (
     <main>
-      <h1>Edit Reservation</h1>
+      <h1>Edit Reservation #{reservation.reservation_id}</h1>
       <ErrorAlert error={reservationError} />
-      {reservation && (
-        <ReservationForm
-          initialState={reservation}
-          onSubmit={submitHandler}
-          onCancel={cancelHandler}
-        />
-      )}
+      {child}
     </main>
   );
 }
 
-export default ReservationUpdate;
+export default ReservationEdit;

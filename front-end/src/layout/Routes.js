@@ -2,13 +2,14 @@ import React from "react";
 
 import { Redirect, Route, Switch } from "react-router-dom";
 import ReservationCreate from "../reservations/ReservationCreate";
-import ReservationUpdate from "../reservations/ReservationUpdate";
+import ReservationEdit from "../reservations/ReservationEdit";
 import Dashboard from "../dashboard/Dashboard";
 import NotFound from "./NotFound";
 import useQuery from "../utils/useQuery";
 import { today } from "../utils/dates";
 import TableCreate from "../tables/TableCreate";
 import ReservationSeat from "../reservations/ReservationSeat";
+import Search from "../search/Search";
 
 function Routes() {
   const query = useQuery();
@@ -21,11 +22,14 @@ function Routes() {
       <Route exact={true} path="/reservations">
         <Redirect to={"/dashboard"} />
       </Route>
+      <Route path="/search">
+        <Search />
+      </Route>
       <Route path="/reservations/new">
         <ReservationCreate />
       </Route>
-      <Route path="/reservations/update/:reservation_id">
-        <ReservationUpdate />
+      <Route path="/reservations/:reservation_id/edit">
+        <ReservationEdit />
       </Route>
       <Route path="/reservations/:reservation_id/seat">
         <ReservationSeat />

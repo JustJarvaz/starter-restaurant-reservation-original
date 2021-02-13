@@ -21,35 +21,16 @@ describe("US-07 - Search reservations - E2E", () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
     page.on("console", onPageConsole);
-    await page.goto(`${baseURL}/dashboard`, { waitUntil: "networkidle0" });
+    await page.goto(`${baseURL}/search`, { waitUntil: "networkidle0" });
   });
 
   afterEach(async () => {
     await browser.close();
   });
 
-  describe("/reservations/search", () => {
-    it("entering an invalid phone number and submitting displays an error message", async () => {
-      await page.type("input[name=reservations_search]", "123123asdf");
-
-      await page.screenshot({
-        path:
-          ".screenshots/us-07-search-reservations-submit-invalid-before.png",
-        fullPage: true,
-      });
-
-      await page.click("button[type=submit]");
-
-      await page.screenshot({
-        path: ".screenshots/us-07-search-reservations-submit-invalid-after.png",
-        fullPage: true,
-      });
-
-      await expect(page).toMatch(/Error/);
-    });
-
-    it("entering a valid phone number and submitting displays the matched records", async () => {
-      await page.type("input[name=reservations_search]", "1231231234");
+  describe("/search page", () => {
+    it("entering an existing mobile number and submitting displays the matched records", async () => {
+      await page.type("input[name=mobile_number]", "808-555-0140");
 
       await page.screenshot({
         path: ".screenshots/us-07-search-reservations-submit-valid-before.png",
@@ -65,8 +46,8 @@ describe("US-07 - Search reservations - E2E", () => {
       await expect(page).toMatch(/Tiger/);
     });
 
-    it("entering a valid phone number and submitting displays a No reservation found message", async () => {
-      await page.type("input[name=reservations_search]", "1231231232");
+    it("entering an non-existent phone number and submitting displays a No reservation found message", async () => {
+      await page.type("input[name=mobile_number]", "1231231232");
 
       await page.screenshot({
         path:
@@ -74,14 +55,17 @@ describe("US-07 - Search reservations - E2E", () => {
         fullPage: true,
       });
 
-      await page.click("button[type=submit]");
+      await Promise.all([
+        page.click("button[type=submit]"),
+        page.waitForResponse(response => response.url().includes('mobile_number=1231231232'))
+      ]);
 
       await page.screenshot({
         path:
           ".screenshots/us-07-search-reservations-submit-no-result-after.png",
         fullPage: true,
       });
-      await expect(page).toMatch(/No reservation found/);
+      await expect(page).toMatch(/No reservations found/);
     });
   });
 });

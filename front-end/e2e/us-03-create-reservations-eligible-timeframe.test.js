@@ -2,13 +2,6 @@ const puppeteer = require("puppeteer");
 const fs = require("fs");
 const fsPromises = fs.promises;
 
-const {
-  INVALID_TIMES,
-  generateInvalidTime,
-} = require("./utils/generateInvalidTime");
-
-const generateNextDate = require("./utils/generateNextDate");
-
 const baseURL = process.env.BASE_URL || "http://localhost:3000";
 
 const onPageConsole = (msg) =>
@@ -44,12 +37,8 @@ describe("/reservations/new page", () => {
     });
 
     it("should display an error message if reservation time is before the open time", async () => {
-      await page.focus("input[name=reservation_date]");
-      await page.keyboard.type(generateNextDate());
-      await page.type(
-        "input[name=reservation_time]",
-        generateInvalidTime(INVALID_TIMES.tooEarly)
-      );
+      await page.type("input[name=reservation_date]", "02022026");
+      await page.type("input[name=reservation_time]", "10:15AM");
 
       await page.screenshot({
         path: ".screenshots/us-02-reservation-too-early-before.png",
@@ -61,20 +50,18 @@ describe("/reservations/new page", () => {
         path: ".screenshots/us-02-reservation-too-early-after.png",
       });
 
-      expect(await page.$("[data-test=errors]")).toBeTruthy();
+      expect(await page.$(".alert-danger")).toBeTruthy();
     });
 
     it("should display an error message if reservation time is too close to close time", async () => {
-      await page.focus("input[name=reservation_date]");
-      await page.keyboard.type(generateNextDate());
-      await page.type(
-        "input[name=reservation_time]",
-        generateInvalidTime(INVALID_TIMES.almostClosing)
-      );
+      await page.type("input[name=reservation_date]", "02022026");
+      await page.type("input[name=reservation_time]", "1005PM");
 
       await page.screenshot({
         path: ".screenshots/us-02-reservation-almost-closing-before.png",
       });
+
+      expect(await page.$(".alert-danger")).toBeFalsy();
 
       await page.click("button[type=submit]");
 
@@ -82,20 +69,18 @@ describe("/reservations/new page", () => {
         path: ".screenshots/us-02-reservation-almost-closing-after.png",
       });
 
-      expect(await page.$("[data-test=errors]")).toBeTruthy();
+      expect(await page.$(".alert-danger")).toBeTruthy();
     });
 
     it("should display an error message if reservation time is after the close time", async () => {
-      await page.focus("input[name=reservation_date]");
-      await page.keyboard.type(generateNextDate());
-      await page.type(
-        "input[name=reservation_time]",
-        generateInvalidTime(INVALID_TIMES.tooLate)
-      );
+      await page.type("input[name=reservation_date]", "02022026");
+      await page.type("input[name=reservation_time]", "1045PM");
 
       await page.screenshot({
         path: ".screenshots/us-02-reservation-too-late-before.png",
       });
+
+      expect(await page.$(".alert-danger")).toBeFalsy();
 
       await page.click("button[type=submit]");
 
@@ -103,7 +88,7 @@ describe("/reservations/new page", () => {
         path: ".screenshots/us-02-reservation-too-late-after.png",
       });
 
-      expect(await page.$("[data-test=errors]")).toBeTruthy();
+      expect(await page.$(".alert-danger")).toBeTruthy();
     });
   });
 });
