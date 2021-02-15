@@ -62,6 +62,23 @@ async function createReservation(reservation, signal) {
   return await fetchJson(url, options, reservation);
 }
 
+/**
+ * Creates a new table
+ * @returns {Promise<[table]>}
+ *  a promise that resolves to the newly created table.
+ */
+async function createTable(table, signal) {
+  const url = `${API_BASE_URL}/tables`;
+  const options = {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ data: table }),
+    signal,
+  };
+  return await fetchJson(url, options, table);
+}
+
 module.exports = {
   createReservation,
+  createTable,
 };

@@ -121,7 +121,7 @@ Given that the restaurant manager is on the `/reservations/new` page,
 When the restaurant manager submits a reservation form,
 Display an error message, with `className="alert alert-danger"`, if the following constraints are violated:
 
-- The reservation can only be made during normal business hours (i.e., between **10:30AM** and **10:30PM**),
+- The reservation can only be made during normal business hours, between **10:30AM** and **10:30PM**,
 - The latest reservation time must _not_ occur within 60 minutes of the close time, so any reservation made between **10:30AM** (inclusive) and **9:30PM** (inclusive) will be honored.
 
 ### US-4 Seat reservation
@@ -139,10 +139,14 @@ so that I know how many occupied and free tables I have in the restaurant.
    - display a `Submit` button that, when clicked, saves the new table then displays the `/tables` page
    - display a `Cancel` button that , when clicked, returns the user to the previous page
 1. The `/dasboard` page will
-   - On one side, displays a list all tables for the restaurant sorted by `table_number`. The other side is the list of reservations.
+   - display a list of all reservations in one area.
+   - display a list all tables for the restaurant sorted by `table_name` in another area.
      - Each table will display "Free" or "Occupied" depending on whether a group is seated at the table.
-   - Display a "Seat now" button on each reservation for the current date only.
-   - the "Seat now" button will be disabled or hidden if the reservation is already assigned to a table.
+   - The "Free" or "Occupied" text must have a `data-table-id-status=${table.table_id}` attribute, so it can be found by the tests.
+   - The areas for displaying reservations and table can be arranged any way you like; left and right or top and bottom, etc.
+   - Display a "Seat" button on each reservation.
+   - "Seat" button must be a link with an `href` attribute that equals `/reservations/${reservation_id}/seat`, so it can be found by the tests.
+   - the "Seat" button will be disabled or hidden if the reservation is already assigned to a table.
    - Reservations may be seated at any time; before or after the actual reservation time.
 1. The `/reservations/:reservation_id/seat` page will
    - have the following required and not-nullable fields.
@@ -151,7 +155,7 @@ so that I know how many occupied and free tables I have in the restaurant.
    - have the following validations:
      - Do not seat a reservation with more people than the capacity of the table.
    - display a `Submit` button that, when clicked, assigns the table to the reservation then displays the `/dashboard` page
-   - POST to `/tables/:table_id/seat/:reservation_id` save the table assignment. The tests do not check the body returned by this POST.
+   - POST to `/tables/:table_id/seat/:reservation_id` in order to save the table assignment. The tests do not check the body returned by this POST.
    - if the table capacity is less than the number of people in the reservation return 400 with an error message.
    - if the table is occupied return 400 with an error message.
    - display a `Cancel` button that, when clicked, returns the user to the previous page
@@ -168,16 +172,20 @@ so that I can seat more guests at that table.
 #### Acceptance Criteria
 
 1. The `/dasboard` page will
-   - Display a "Finish" button on each occupied table.
+   - Display a "Finish" button on each _occupied_ table.
+   - the "Finish" button must have a `data-finish-reservation-id={reservation.reservation_id}` attribute, so it can be found by the tests.
    - Clicking the "Finish" button will display the following confirmation: "Is this table ready to seat new guests? This cannot be undone."
-     - If the user selects "Ok", the table is listed as available in the table list.
+     - If the user selects "Ok" the system will:
+     - Send a `DELETE` request to `/tables/:table_id/seat/:reservation_id` in order to remove the table assignment. The tests do not check the body returned by this request.
+       - the server should return 400 if the table is not occupied, or if the seated `reservation_id` does not match the reservation_id in the url.
+     - Refresh the list of tables to show that the table is now available.
      - If the user selects "Cancel" no changes are made.
 
-### US-6 Seat a walk-in group
+### US-6 Reservation Status
 
 As a restaurant manager
-I want to seat a walk-in group (without a reservation) at a specific table
-so that I know how many occupied and free tables I have in the restaurant.
+I want to see the status of a reservation as one of: booked, arrived, seated, finished
+so that I can use the history of reservations to estimate future staffing and ordering needs.
 
 #### Acceptance Criteria
 
@@ -189,6 +197,8 @@ so that I know how many occupied and free tables I have in the restaurant.
      - Number of people in the party, which must be at least 1 person. `<input name="people" />`
    - display a `Submit` button that, when clicked, saves a new reservation record for the current date and time and saves the table assignment, then displays the `/dashboard` page
    - display a `Cancel` button that , when clicked, returns the user to the previous page.
+
+> **Hint** The end-to-end test waits for the tables list to be refreshed before checking the free/occupied status of the table so be sure to send a GET request to `/tables` to refresh the tables list.
 
 ### US-7 Search for a reservation by phone number
 
@@ -232,6 +242,7 @@ so that I know how many customers will arrive at the restaurant on a given day.
 1. The `/dashboard` and the `/search` page will
    - Display an "Edit" button next to each reservation
      - Clicking the "Edit" button will navigate the user to the `/reservations/:reservation_id/edit` page
+   - the "Edit" button must be a link with an `href` attribute that equals `/reservations/${reservation_id}/edit`, so it can be found by the tests.
    - Display a "Cancel" button next to each reservation
      - Clicking the "Cancel" button will display the following confirmation: "Do you want to cancel this reservation? This cannot be undone."
        - If the user selects "Ok", the reservation is removed from the page and deleted from the database, the confirmation disappears, and the results on the page are refreshed.

@@ -15,18 +15,18 @@ describe("US-01 - Create and list reservations - E2E", () => {
 
   beforeAll(async () => {
     await fsPromises.mkdir("./.screenshots", { recursive: true });
-    browser = await puppeteer.launch({ args: ["--start-maximized"] });
+    browser = await puppeteer.launch();
+  });
+
+  beforeEach(async () => {
     page = await browser.newPage();
     page.on("console", onPageConsole);
     await page.setViewport({ width: 1920, height: 1080 });
+    await page.goto(`${baseURL}/reservations/new`, { waitUntil: "load" });
   });
 
   afterAll(async () => {
     await browser.close();
-  });
-
-  beforeEach(async () => {
-    await page.goto(`${baseURL}/reservations/new`, { waitUntil: "load" });
   });
 
   describe("/reservations/new", () => {

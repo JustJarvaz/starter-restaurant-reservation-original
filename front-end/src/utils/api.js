@@ -183,3 +183,24 @@ export async function seatReservation(reservation_id, table_id) {
   };
   return await fetchJson(url, options, {});
 }
+
+/**
+ * Finishes the specified table.
+ *
+ * @param table_id
+ *  the table_id being finished
+ * @param reservation_id
+ *  the reservation_id being finished
+ * @param table_id
+ *  the table_id where the reservation is being being seated
+ * @returns {Promise<Error|*>}
+ *  a promise that resolves to the response from the server. Which may be empty.
+ */
+export async function finishTable(table_id, reservation_id) {
+  const url = `${API_BASE_URL}/tables/${table_id}/seat/${reservation_id}`;
+  const options = {
+    method: "DELETE",
+    headers,
+  };
+  return await fetchJson(url, options, {});
+}

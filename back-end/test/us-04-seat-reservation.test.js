@@ -99,6 +99,7 @@ describe("US-04 - Seat reservation", () => {
         expect(response.body.error).toContain("capacity");
         expect(response.status).toBe(400);
       });
+
       test("returns 400 if capacity is zero", async () => {
         const data = {
           table_name: "table name",
@@ -113,6 +114,7 @@ describe("US-04 - Seat reservation", () => {
         expect(response.body.error).toContain("capacity");
         expect(response.status).toBe(400);
       });
+
       test("returns 400 if capacity is not a number", async () => {
         const data = {
           table_name: "table name",
@@ -126,6 +128,22 @@ describe("US-04 - Seat reservation", () => {
 
         expect(response.body.error).toContain("capacity");
         expect(response.status).toBe(400);
+      });
+
+      test("returns 201 if table is created", async () => {
+        const data = {
+          table_name: "table-name",
+          capacity: 1,
+        };
+
+        const response = await request(app)
+          .post("/tables")
+          .set("Accept", "application/json")
+          .send({ data });
+
+        expect(response.body.error).toBeUndefined();
+        expect(response.body.data).toEqual(expect.objectContaining(data));
+        expect(response.status).toBe(201);
       });
     });
 

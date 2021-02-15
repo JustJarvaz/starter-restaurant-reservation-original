@@ -21,6 +21,7 @@ describe("US-07 - Search reservations - E2E", () => {
     browser = await puppeteer.launch();
     page = await browser.newPage();
     page.on("console", onPageConsole);
+    await page.setViewport({ width: 1920, height: 1080 });
     await page.goto(`${baseURL}/search`, { waitUntil: "networkidle0" });
   });
 
@@ -57,7 +58,9 @@ describe("US-07 - Search reservations - E2E", () => {
 
       await Promise.all([
         page.click("button[type=submit]"),
-        page.waitForResponse(response => response.url().includes('mobile_number=1231231232'))
+        page.waitForResponse((response) =>
+          response.url().includes("mobile_number=1231231232")
+        ),
       ]);
 
       await page.screenshot({

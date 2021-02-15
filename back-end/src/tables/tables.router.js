@@ -13,6 +13,7 @@ router
   .route("/:table_id/seat/:reservation_id")
   .all(reservationController.reservationExists)
   .post(controller.seat)
+  .delete(controller.finish)
   .all(methodNotAllowed);
 
 module.exports = router;

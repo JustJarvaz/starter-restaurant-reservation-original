@@ -23,7 +23,7 @@ async function tableExists(req, res, next) {
   }
 }
 
-async function tableIsAvailable(req, res, next) {
+function tableIsAvailable(req, res, next) {
   req.log.debug({ __filename, methodName: tableIsAvailable.name });
 
   if (res.locals.table.reservation_id) {
@@ -105,6 +105,70 @@ async function seat(req, res) {
   });
 }
 
+function reservationIdMatches(req, res, next) {
+  req.log.debug({ __filename, methodName: reservationIdMatches.name });
+  if (
+    res.locals.table.reservation_id === res.locals.reservation.reservation_id
+  ) {
+    next();
+    req.log.trace({
+      __filename,
+      methodName: reservationIdMatches.name,
+      data: "next()",
+    });
+  } else {
+    next({
+      status: 400,
+      message: `Reservation id does not match: ${res.locals.table.reservation_id} and ${res.locals.reservation.reservation_id}`,
+    });
+    req.log.trace({
+      __filename,
+      methodName: reservationIdMatches.name,
+      data: 400,
+    });
+  }
+}
+
+function tableIsOccupied(req, res, next) {
+  req.log.debug({ __filename, methodName: tableIsAvailable.name });
+
+  if (res.locals.table.reservation_id) {
+    next();
+    req.log.trace({
+      __filename,
+      methodName: tableIsAvailable.name,
+      data: "next()",
+    });
+  } else {
+    next({
+      status: 400,
+      message: `Table is not occupied: ${res.locals.table.table_id}`,
+    });
+    req.log.trace({ __filename, methodName: tableIsAvailable.name, data: 400 });
+  }
+}
+
+async function finish(req, res) {
+  req.log.debug({ __filename, methodName: seat.name });
+
+  const table = res.locals.table;
+
+  table.reservation_id = null;
+
+  const data = await service.update(table);
+
+  res.json({
+    data,
+  });
+
+  req.log.trace({
+    __filename,
+    methodName: seat.name,
+    return: true,
+    data: table,
+  });
+}
+
 module.exports = {
   create: asyncErrorBoundary(create),
   list: asyncErrorBoundary(list),
@@ -113,5 +177,11 @@ module.exports = {
     tableIsAvailable,
     hasCapacityForReservation,
     asyncErrorBoundary(seat),
+  ],
+  finish: [
+    asyncErrorBoundary(tableExists),
+    tableIsOccupied,
+    reservationIdMatches,
+    asyncErrorBoundary(finish),
   ],
 };

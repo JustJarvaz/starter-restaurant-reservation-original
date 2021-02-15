@@ -10,29 +10,30 @@ const onPageConsole = (msg) =>
     console.log(`<LOG::page console ${msg.type()}>`, ...eventJson)
   );
 
-describe("US-08 - Update and delete reservation - E2E", () => {
+describe("US-08 - Make changes to an existing reservation - E2E", () => {
   let page;
   let browser;
   let reservation;
 
-  const dashboardTestPath = `${baseURL}/dashboard?date=2025-01-02`;
+  const dashboardTestPath = `${baseURL}/dashboard?date=2035-01-04`;
 
   beforeAll(async () => {
     await fsPromises.mkdir("./.screenshots", { recursive: true });
     browser = await puppeteer.launch();
-    page = await browser.newPage();
 
     reservation = await createReservation({
       first_name: "James",
       last_name: Date.now().toString(10),
       mobile_number: "555-1212",
-      reservation_date: "2025-01-02",
+      reservation_date: "2035-01-04",
       reservation_time: "14:00",
       people: 2,
     });
   });
 
   beforeEach(async () => {
+    page = await browser.newPage();
+    await page.setViewport({ width: 1920, height: 1080 });
     page.on("console", onPageConsole);
   });
 
@@ -41,7 +42,7 @@ describe("US-08 - Update and delete reservation - E2E", () => {
   });
 
   describe("/dashboard", () => {
-    it("clicking on the Edit button takes the user to the /reservations/:reservation_id/edit page", async () => {
+    it("the Edit button is a link to the /reservations/:reservation_id/edit page", async () => {
       await page.goto(dashboardTestPath, {
         waitUntil: "networkidle0",
       });
@@ -51,25 +52,22 @@ describe("US-08 - Update and delete reservation - E2E", () => {
         fullPage: true,
       });
 
-      const [editButton] = await page.$x(
-        "//a[contains(translate(., 'ACDEFGHIJKLMNOPQRSTUVWXYZ', 'acdefghijklmnopqrstuvwxyz'), 'edit')]"
-      );
-
-      if (!editButton) {
-        throw new Error("button containing edit not found.");
-      }
-
-      await Promise.all([
-        editButton.click(),
-        page.waitForNavigation({ waitUntil: "networkidle0" }),
-      ]);
+      const hrefSelector = `[href="/reservations/${reservation.reservation_id}/edit"]`;
+      await page.waitForSelector(hrefSelector);
 
       await page.screenshot({
         path: ".screenshots/us-08-dashboard-edit-click-after.png",
         fullPage: true,
       });
 
-      await expect(page.url()).toMatch(/reservations\/\d+\/edit/);
+      const containsEdit = await page.evaluate((hrefSelector) => {
+        return document
+          .querySelector(hrefSelector)
+          .innerText.toLowerCase()
+          .includes("edit");
+      }, hrefSelector);
+
+      expect(containsEdit).toBe(true);
     });
   });
 

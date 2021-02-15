@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { deleteReservation, listReservations, listTables } from "../utils/api";
+import {
+  deleteReservation,
+  finishTable,
+  listReservations,
+  listTables,
+} from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import { Link } from "react-router-dom";
 import { next, previous, today } from "../utils/dates";
@@ -30,6 +35,12 @@ function Dashboard({ date }) {
     deleteReservation(reservation_id)
       .then(loadDashboard)
       .catch(setReservationsError);
+  }
+
+  function onFinish(table_id, reservation_id) {
+    finishTable(table_id, reservation_id)
+      .then(loadDashboard)
+      .catch(setTablesError);
   }
 
   return (
@@ -72,8 +83,7 @@ function Dashboard({ date }) {
               <thead>
                 <tr>
                   <th className="border-top-0">#</th>
-                  <th className="border-top-0">FIRST NAME</th>
-                  <th className="border-top-0">LAST NAME</th>
+                  <th className="border-top-0">NAME</th>
                   <th className="border-top-0">PHONE</th>
                   <th className="border-top-0">DATE</th>
                   <th className="border-top-0">TIME</th>
@@ -102,7 +112,7 @@ function Dashboard({ date }) {
                 </tr>
               </thead>
               <tbody>
-                <TablesList tables={tables} />
+                <TablesList onFinish={onFinish} tables={tables} />
               </tbody>
             </table>
           </div>

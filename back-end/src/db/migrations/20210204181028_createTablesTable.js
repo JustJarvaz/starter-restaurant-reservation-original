@@ -4,7 +4,7 @@ exports.up = function (knex) {
     table.string("table_name").notNullable();
     table.integer("capacity", null).unsigned().notNullable();
     table
-      .bigInteger("reservation_id")
+      .integer("reservation_id")
       .unsigned()
       .nullable()
       .defaultTo(null)
