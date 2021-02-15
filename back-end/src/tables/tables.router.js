@@ -10,9 +10,8 @@ router
   .all(methodNotAllowed);
 
 router
-  .route("/:table_id/seat/:reservation_id")
-  .all(reservationController.reservationExists)
-  .post(controller.seat)
+  .route("/:table_id/seat")
+  .put(reservationController.reservationExists, controller.seat)
   .delete(controller.finish)
   .all(methodNotAllowed);
 

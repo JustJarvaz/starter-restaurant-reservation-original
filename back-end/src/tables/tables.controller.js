@@ -105,30 +105,6 @@ async function seat(req, res) {
   });
 }
 
-function reservationIdMatches(req, res, next) {
-  req.log.debug({ __filename, methodName: reservationIdMatches.name });
-  if (
-    res.locals.table.reservation_id === res.locals.reservation.reservation_id
-  ) {
-    next();
-    req.log.trace({
-      __filename,
-      methodName: reservationIdMatches.name,
-      data: "next()",
-    });
-  } else {
-    next({
-      status: 400,
-      message: `Reservation id does not match: ${res.locals.table.reservation_id} and ${res.locals.reservation.reservation_id}`,
-    });
-    req.log.trace({
-      __filename,
-      methodName: reservationIdMatches.name,
-      data: 400,
-    });
-  }
-}
-
 function tableIsOccupied(req, res, next) {
   req.log.debug({ __filename, methodName: tableIsAvailable.name });
 
@@ -181,7 +157,6 @@ module.exports = {
   finish: [
     asyncErrorBoundary(tableExists),
     tableIsOccupied,
-    reservationIdMatches,
     asyncErrorBoundary(finish),
   ],
 };

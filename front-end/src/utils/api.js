@@ -176,9 +176,10 @@ export async function listTables(signal) {
  *  a promise that resolves to the response from the server. Which may be empty.
  */
 export async function seatReservation(reservation_id, table_id) {
-  const url = `${API_BASE_URL}/tables/${table_id}/seat/${reservation_id}`;
+  const url = `${API_BASE_URL}/tables/${table_id}/seat`;
   const options = {
-    method: "POST",
+    method: "PUT",
+    body: JSON.stringify({ data: { reservation_id } }),
     headers,
   };
   return await fetchJson(url, options, {});
@@ -197,7 +198,7 @@ export async function seatReservation(reservation_id, table_id) {
  *  a promise that resolves to the response from the server. Which may be empty.
  */
 export async function finishTable(table_id, reservation_id) {
-  const url = `${API_BASE_URL}/tables/${table_id}/seat/${reservation_id}`;
+  const url = `${API_BASE_URL}/tables/${table_id}/seat`;
   const options = {
     method: "DELETE",
     headers,

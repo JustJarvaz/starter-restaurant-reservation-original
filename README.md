@@ -150,12 +150,12 @@ so that I know how many occupied and free tables I have in the restaurant.
    - Reservations may be seated at any time; before or after the actual reservation time.
 1. The `/reservations/:reservation_id/seat` page will
    - have the following required and not-nullable fields.
-     - Table number: `<select name="table_id" />` listing only the unoccupied tables.
+     - Table number: `<select name="table_id" />`.
      - The text of the option should be `{table.table_name} - {table.capacity}`
    - have the following validations:
      - Do not seat a reservation with more people than the capacity of the table.
    - display a `Submit` button that, when clicked, assigns the table to the reservation then displays the `/dashboard` page
-   - POST to `/tables/:table_id/seat/:reservation_id` in order to save the table assignment. The tests do not check the body returned by this POST.
+   - PUT to `/tables/:table_id/seat/` in order to save the table assignment. The body of the request should be `{ data: { reservation_id: x } }` where X is the reservation_id of the reservation being seated. The tests do not check the body returned by this request.
    - if the table capacity is less than the number of people in the reservation return 400 with an error message.
    - if the table is occupied return 400 with an error message.
    - display a `Cancel` button that, when clicked, returns the user to the previous page
@@ -176,11 +176,11 @@ so that I can seat more guests at that table.
    - the "Finish" button must have a `data-finish-reservation-id={reservation.reservation_id}` attribute, so it can be found by the tests.
    - Clicking the "Finish" button will display the following confirmation: "Is this table ready to seat new guests? This cannot be undone."
      - If the user selects "Ok" the system will:
-     - Send a `DELETE` request to `/tables/:table_id/seat/:reservation_id` in order to remove the table assignment. The tests do not check the body returned by this request.
-       - the server should return 400 if the table is not occupied, or if the seated `reservation_id` does not match the reservation_id in the url.
+     - Send a `DELETE` request to `/tables/:table_id/seat` in order to remove the table assignment. The tests do not check the body returned by this request.
+       - the server should return 400 if the table is not occupied.
      - Refresh the list of tables to show that the table is now available.
      - If the user selects "Cancel" no changes are made.
-	
+
 > **Hint** The end-to-end test waits for the tables list to be refreshed before checking the free/occupied status of the table so be sure to send a GET request to `/tables` to refresh the tables list.
 
 ### US-6 Reservation Status

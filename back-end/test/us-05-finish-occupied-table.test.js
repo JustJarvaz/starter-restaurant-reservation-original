@@ -19,7 +19,7 @@ describe("US-05 - Finish an occupied table", () => {
     return await knex.migrate.rollback(null, true).then(() => knex.destroy());
   });
 
-  describe("DELETE /tables/:table_id/seat/:reservation_id", () => {
+  describe("DELETE /tables/:table_id/seat", () => {
     let barTableOne;
     let tableOne;
 
@@ -30,7 +30,7 @@ describe("US-05 - Finish an occupied table", () => {
 
     test("returns 404 for non-existent table_id", async () => {
       const response = await request(app)
-        .delete("/tables/99/seat/1")
+        .delete("/tables/99/seat")
         .set("Accept", "application/json")
         .send({ datum: {} });
 
@@ -40,7 +40,7 @@ describe("US-05 - Finish an occupied table", () => {
 
     test("returns 400 if table_id is not occupied.", async () => {
       const response = await request(app)
-        .delete("/tables/1/seat/1")
+        .delete("/tables/1/seat")
         .set("Accept", "application/json")
         .send({});
 
@@ -48,37 +48,18 @@ describe("US-05 - Finish an occupied table", () => {
       expect(response.status).toBe(400);
     });
 
-    test("returns 400 if reservation_id in url does not match seated reservation_id", async () => {
+    test("returns 200 if table_id is occupied ", async () => {
       const seatResponse = await request(app)
-        .post(`/tables/${tableOne.table_id}/seat/1`)
+        .put(`/tables/${tableOne.table_id}/seat`)
         .set("Accept", "application/json")
-        .send({});
+        .send({ data: { reservation_id: 1 } });
 
       expect(seatResponse.body.error).toBeUndefined();
       expect(seatResponse.status).toBe(200);
 
       const finishResponse = await request(app)
-        .delete(`/tables/${tableOne.table_id}/seat/3`)
-        .set("Accept", "application/json")
-        .send({});
-
-      expect(finishResponse.body.error).toContain("3");
-      expect(finishResponse.status).toBe(400);
-    });
-
-    test("returns 200 if table_id is occupied and reservation_id matches", async () => {
-      const seatResponse = await request(app)
-        .post(`/tables/${tableOne.table_id}/seat/1`)
-        .set("Accept", "application/json")
-        .send({});
-
-      expect(seatResponse.body.error).toBeUndefined();
-      expect(seatResponse.status).toBe(200);
-
-      const finishResponse = await request(app)
-        .delete(`/tables/${tableOne.table_id}/seat/1`)
-        .set("Accept", "application/json")
-        .send({});
+        .delete(`/tables/${tableOne.table_id}/seat`)
+        .set("Accept", "application/json");
 
       expect(finishResponse.body.error).toBeUndefined();
       expect(finishResponse.status).toBe(200);

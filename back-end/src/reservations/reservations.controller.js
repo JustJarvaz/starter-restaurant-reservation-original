@@ -1,10 +1,36 @@
 const service = require("./reservations.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
+function hasReservationId(req, res, next) {
+  const reservation_id =
+    req.params.reservation_id || req.body?.data?.reservation_id;
+
+  if (reservation_id) {
+    res.locals.reservation_id = reservation_id;
+    next();
+    req.log.trace({
+      __filename,
+      methodName: reservationExists.name,
+      data: reservation_id,
+    });
+  } else {
+    next({
+      status: 400,
+      message: `reservation_id is required`,
+    });
+    req.log.trace({
+      __filename,
+      methodName: reservationExists.name,
+      data: 400,
+    });
+  }
+}
+
 async function reservationExists(req, res, next) {
   req.log.debug({ __filename, methodName: reservationExists.name });
 
-  const { reservation_id } = req.params;
+  const reservation_id =
+    req.params.reservation_id || req.body?.data?.reservation_id;
 
   const reservation = await service.read(reservation_id);
 
@@ -95,7 +121,7 @@ module.exports = {
   create: asyncErrorBoundary(create),
   list: asyncErrorBoundary(list),
   read: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(read)],
-  reservationExists: asyncErrorBoundary(reservationExists),
+  reservationExists: [hasReservationId, asyncErrorBoundary(reservationExists)],
   delete: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(destroy)],
   update: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(update)],
 };

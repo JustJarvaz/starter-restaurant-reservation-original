@@ -186,38 +186,77 @@ describe("US-04 - Seat reservation", () => {
       tableOne = await knex("tables").where("table_name", "#1").first();
     });
 
-    describe("POST /tables/:table_id/seat/:reservation_Id", () => {
-      test("returns 200 if table has sufficient capacity", async () => {
-        const url = `/tables/${tableOne.table_id}/seat/1`;
+    describe("PUT /tables/:table_id/seat", () => {
+      test("returns 400 if data is missing", async () => {
+        const response = await request(app)
+          .put(`/tables/${tableOne.table_id}/seat`)
+          .set("Accept", "application/json")
+          .send({ datum: {} });
+
+        expect(response.body.error).toBeDefined();
+        expect(response.status).toBe(400);
+      });
+
+      test("returns 400 if reservation_id is missing", async () => {
+        const data = {};
 
         const response = await request(app)
-          .post(url)
-          .set("Accept", "application/json");
+          .put(`/tables/${tableOne.table_id}/seat`)
+          .set("Accept", "application/json")
+          .send({ data });
+
+        expect(response.body.error).toContain("reservation_id");
+        expect(response.status).toBe(400);
+      });
+
+      test("returns 404 if reservation_id does not exist", async () => {
+        const data = {
+          reservation_id: 999,
+        };
+
+        const response = await request(app)
+          .put(`/tables/${tableOne.table_id}/seat`)
+          .set("Accept", "application/json")
+          .send({ data });
+
+        expect(response.body.error).toContain("999");
+        expect(response.status).toBe(404);
+      });
+
+      test("returns 200 if table has sufficient capacity", async () => {
+        const response = await request(app)
+          .put(`/tables/${tableOne.table_id}/seat`)
+          .set("Accept", "application/json")
+          .send({ data: { reservation_id: 1 } });
 
         expect(response.body.error).toBeUndefined();
         expect(response.status).toBe(200);
       });
       test("returns 400 if table does not have sufficient capacity", async () => {
         const response = await request(app)
-          .post(`/tables/${barTableOne.table_id}/seat/1`)
-          .set("Accept", "application/json");
+          .put(`/tables/${barTableOne.table_id}/seat`)
+          .set("Accept", "application/json")
+          .send({ data: { reservation_id: 1 } });
 
         expect(response.body.error).toContain("capacity");
         expect(response.status).toBe(400);
       });
+
       test("returns 400 if table is occupied", async () => {
         // first, occupy the table
         const occupyResponse = await request(app)
-          .post(`/tables/${tableOne.table_id}/seat/1`)
-          .set("Accept", "application/json");
+          .put(`/tables/${tableOne.table_id}/seat`)
+          .set("Accept", "application/json")
+          .send({ data: { reservation_id: 1 } });
 
         expect(occupyResponse.body.error).toBeUndefined();
         expect(occupyResponse.status).toBe(200);
 
         // next, try to assign the table to another reservation
         const doubleAssignResponse = await request(app)
-          .post(`/tables/${tableOne.table_id}/seat/2`)
-          .set("Accept", "application/json");
+          .put(`/tables/${tableOne.table_id}/seat`)
+          .set("Accept", "application/json")
+          .send({ data: { reservation_id: 2 } });
 
         expect(doubleAssignResponse.body.error).toContain("occupied");
         expect(doubleAssignResponse.status).toBe(400);
