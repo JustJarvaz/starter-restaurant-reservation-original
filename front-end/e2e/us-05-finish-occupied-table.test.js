@@ -99,5 +99,49 @@ describe("US-05 - Finish an occupied table - E2E", () => {
 
       expect(containsFree).toBe(true);
     });
+
+    test("clicking finish button and then clicking CANCEL does nothing", async () => {
+      await page.screenshot({
+        path: ".screenshots/us-05-dashboard-finish-button-cancel-before.png",
+        fullPage: true,
+      });
+
+      const containsOccupied = await page.evaluate((table_id) => {
+        return document
+          .querySelector(`[data-table-id-status="${table_id}"]`)
+          .innerText.toLowerCase()
+          .includes("occupied");
+      }, table.table_id);
+
+      expect(containsOccupied).toBe(true);
+
+      const finishButtonSelector = `[data-table-id-finish="${table.table_id}"]`;
+      await page.waitForSelector(finishButtonSelector);
+
+      page.on("dialog", async (dialog) => {
+        expect(dialog.message()).toContain(
+          "Is this table ready to seat new guests?"
+        );
+        await dialog.dismiss();
+      });
+
+      await page.click(finishButtonSelector);
+
+      await page.waitForTimeout(1000)
+
+      await page.screenshot({
+        path: ".screenshots/us-05-dashboard-finish-button-cancel-after.png",
+        fullPage: true,
+      });
+
+      const containsFree = await page.evaluate((table_id) => {
+        return document
+          .querySelector(`[data-table-id-status="${table_id}"]`)
+          .innerText.toLowerCase()
+          .includes("free");
+      }, table.table_id);
+
+      expect(containsFree).toBe(false);
+    });
   });
 });

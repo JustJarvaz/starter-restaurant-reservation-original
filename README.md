@@ -180,6 +180,8 @@ so that I can seat more guests at that table.
        - the server should return 400 if the table is not occupied, or if the seated `reservation_id` does not match the reservation_id in the url.
      - Refresh the list of tables to show that the table is now available.
      - If the user selects "Cancel" no changes are made.
+	
+> **Hint** The end-to-end test waits for the tables list to be refreshed before checking the free/occupied status of the table so be sure to send a GET request to `/tables` to refresh the tables list.
 
 ### US-6 Reservation Status
 
@@ -197,8 +199,6 @@ so that I can use the history of reservations to estimate future staffing and or
      - Number of people in the party, which must be at least 1 person. `<input name="people" />`
    - display a `Submit` button that, when clicked, saves a new reservation record for the current date and time and saves the table assignment, then displays the `/dashboard` page
    - display a `Cancel` button that , when clicked, returns the user to the previous page.
-
-> **Hint** The end-to-end test waits for the tables list to be refreshed before checking the free/occupied status of the table so be sure to send a GET request to `/tables` to refresh the tables list.
 
 ### US-7 Search for a reservation by phone number
 
