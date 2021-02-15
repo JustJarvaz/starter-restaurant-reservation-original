@@ -32,6 +32,8 @@ See [./rubric.md](./rubric.md). Update the rubric as you complete each user stor
 ## TODO
 
 1. Hou: Remove Math.random() from any tests - random data in a test in not deterministic and makes it impossible to debug certain failures.
+1. Update the update and cancel stories to require events introduced in US-06. Cancelling should not actually delete the reservation but set the status to "cancelled" and hide it from other pages.
+   - cannot edit or cancel after being seated. Can only finish
 1. Create starter-code repos for front-end and back-end repos (Dale is investigating Github actions)
 1. Make it possible to run each test suite at a time, and display test output to more clearly show which tests have failed (and possibly hide e2e test logs for passing tests).
 1. Update final-capstone checkpoints with any additional info, if needed. Link starter repos to web-dev repo
@@ -46,3 +48,4 @@ This section lists things that the student must know about to successfully compl
 - Automatically running latest migrations when application starts - didn't see this either
 - e2e tests and screen shots
 - asyncErrorBoundary is missing from Knex content.
+- knex .alterTable and .dropColumn

@@ -65,27 +65,7 @@ function Search() {
         </fieldset>
       </form>
       {showResults && (
-        <div className="table-responsive">
-          <table className="table no-wrap">
-            <thead>
-              <tr>
-                <th className="border-top-0">#</th>
-                <th className="border-top-0">FIRST NAME</th>
-                <th className="border-top-0">LAST NAME</th>
-                <th className="border-top-0">PHONE</th>
-                <th className="border-top-0">DATE</th>
-                <th className="border-top-0">TIME</th>
-                <th className="border-top-0">PEOPLE</th>
-              </tr>
-            </thead>
-            <tbody>
-              <ReservationsList
-                onCancel={onCancel}
-                reservations={reservations}
-              />
-            </tbody>
-          </table>
-        </div>
+        <ReservationsList onCancel={onCancel} reservations={reservations} />
       )}
     </main>
   );

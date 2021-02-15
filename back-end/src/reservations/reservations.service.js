@@ -7,9 +7,33 @@ const tableName = "reservations";
 
 const validDate = /\d\d\d\d-\d\d-\d\d/;
 const validTime = /\d\d:\d\d/;
-const validPhone = /^\d{10}$/;
+const validStatus = ["booked", "seated", "finished"];
 
 const CLOSED_DAYS = [2]; // 0 - Sunday, 1 - Monday, 2 - Tuesday, 3 - Wednesday, 4 - Thursday, 5 - Friday, 6 - Saturday
+
+function hasValidStatus(reservation) {
+  if (validStatus.includes(reservation.status)) {
+    return reservation;
+  }
+
+  const error = new Error(
+    `Invalid status: "${reservation.status}". Status must be one of: ${validStatus}`
+  );
+  error.status = 400;
+  throw error;
+}
+
+function hasOptionalBookedStatus(reservation) {
+  if (reservation.status && reservation.status !== "booked") {
+    const error = new Error(
+      `Invalid status: ${reservation.status}. A new reservation must have no status or a status of 'booked'`
+    );
+    error.status = 400;
+    throw error;
+  }
+
+  return reservation;
+}
 
 function convertISOTimeToMinutes(time = "0:0") {
   const result = time.split(":").map((part) => parseInt(part));
@@ -100,17 +124,6 @@ function isWithinEligibleTimeframe(reservation) {
   return reservation;
 }
 
-function isValidMobileNumber(phone) {
-  if (!phone.match(validPhone)) {
-    const error = new Error(
-      "The phone number must be a ten-digit US-based phone number"
-    );
-    error.status = 400;
-    throw error;
-  }
-  return phone;
-}
-
 function create(newReservation) {
   return knex(tableName)
     .insert(newReservation, "*")
@@ -120,6 +133,7 @@ function create(newReservation) {
 function list(date) {
   return knex(tableName)
     .where("reservation_date", date)
+    .andWhereNot("status", "finished")
     .orderBy("reservation_time");
 }
 
@@ -147,8 +161,7 @@ function update(reservation) {
     .then((records) => records[0]);
 }
 
-const createComposition = compose(
-  create,
+const validReservationComposition = compose(
   isWithinEligibleTimeframe,
   isWorkingDay,
   isFutureDate,
@@ -160,26 +173,26 @@ const createComposition = compose(
   hasProperty("first_name")
 );
 
-const searchComposition = compose(search);
+const createComposition = compose(
+  create,
+  hasOptionalBookedStatus,
+  validReservationComposition
+);
 
 const updateComposition = compose(
   update,
-  isWithinEligibleTimeframe,
-  isWorkingDay,
-  isFutureDate,
-  peopleIsGreaterThanZero,
-  hasReservationTime,
-  hasReservationDate,
-  hasProperty("mobile_number"),
-  hasProperty("last_name"),
-  hasProperty("first_name")
+  hasValidStatus,
+  validReservationComposition
 );
+
+const statusComposition = compose(update, hasValidStatus);
 
 module.exports = {
   create: traceFunction(createComposition, __filename),
+  delete: traceFunction(destroy, __filename),
   list: traceFunction(list, __filename),
   read: traceFunction(read, __filename),
-  search: traceFunction(searchComposition, __filename),
-  delete: traceFunction(destroy, __filename),
+  search: traceFunction(search, __filename),
+  status: traceFunction(statusComposition, __filename),
   update: traceFunction(updateComposition, __filename),
 };

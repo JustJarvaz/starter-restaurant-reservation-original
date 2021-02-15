@@ -10,6 +10,20 @@ async function selectOptionByText(page, name, optionText) {
   await page.select(`[name=${name}`, optionValue);
 }
 
+function containsText(page, selector, expected) {
+  return page.evaluate(
+    (selector, expected) => {
+      return document
+        .querySelector(selector)
+        .innerText.toLowerCase()
+        .includes(expected);
+    },
+    selector,
+    expected
+  );
+}
+
 module.exports = {
+  containsText,
   selectOptionByText,
 };

@@ -6,10 +6,10 @@ import {
   listTables,
 } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
-import { Link } from "react-router-dom";
 import { next, previous, today } from "../utils/dates";
 import TablesList from "./TablesList";
 import ReservationsList from "./ReservationsList";
+import DateButtons from "./DateButtons";
 
 function Dashboard({ date }) {
   const [reservations, setReservations] = useState([]);
@@ -52,70 +52,16 @@ function Dashboard({ date }) {
             <h4 className="box-title mb-0">Reservations for {date}</h4>
           </div>
           <ErrorAlert error={reservationsError} />
-          <div
-            className="btn-group"
-            role="group"
-            aria-label="navigation buttons"
-          >
-            <Link
-              className="btn btn-secondary"
-              to={`/dashboard?date=${previous(date)}`}
-            >
-              <span className="oi oi-chevron-left" />
-              &nbsp;Previous
-            </Link>
-            <Link
-              className="btn btn-secondary"
-              to={`/dashboard?date=${today()}`}
-            >
-              Today
-            </Link>
-            <Link
-              className="btn btn-secondary"
-              to={`/dashboard?date=${next(date)}`}
-            >
-              Next&nbsp;
-              <span className="oi oi-chevron-right" />
-            </Link>
-          </div>
-          <div className="table-responsive">
-            <table className="table no-wrap">
-              <thead>
-                <tr>
-                  <th className="border-top-0">#</th>
-                  <th className="border-top-0">NAME</th>
-                  <th className="border-top-0">PHONE</th>
-                  <th className="border-top-0">DATE</th>
-                  <th className="border-top-0">TIME</th>
-                  <th className="border-top-0">PEOPLE</th>
-                </tr>
-              </thead>
-              <tbody>
-                <ReservationsList
-                  onCancel={onCancel}
-                  reservations={reservations}
-                />
-              </tbody>
-            </table>
-          </div>
+          <DateButtons
+            previous={`/dashboard?date=${previous(date)}`}
+            today={`/dashboard?date=${today()}`}
+            next={`/dashboard?date=${next(date)}`}
+          />
+          <ReservationsList onCancel={onCancel} reservations={reservations} />
         </div>
         <div className="col-md-6 col-lg-6 col-sm-12">
           <ErrorAlert error={tablesError} />
-          <div className="table-responsive">
-            <table className="table no-wrap">
-              <thead>
-                <tr>
-                  <th className="border-top-0">#</th>
-                  <th className="border-top-0">TABLE NAME</th>
-                  <th className="border-top-0">CAPACITY</th>
-                  <th className="border-top-0">Free?</th>
-                </tr>
-              </thead>
-              <tbody>
-                <TablesList onFinish={onFinish} tables={tables} />
-              </tbody>
-            </table>
-          </div>
+          <TablesList onFinish={onFinish} tables={tables} />
         </div>
       </div>
     </main>

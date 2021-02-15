@@ -38,7 +38,12 @@ describe("US-07 - Search reservations - E2E", () => {
         fullPage: true,
       });
 
-      await page.click("button[type=submit]");
+      await Promise.all([
+        page.click("button[type=submit]"),
+        page.waitForResponse((response) =>
+          response.url().includes("mobile_number=")
+        ),
+      ]);
 
       await page.screenshot({
         path: ".screenshots/us-07-search-reservations-submit-valid-after.png",
@@ -47,7 +52,7 @@ describe("US-07 - Search reservations - E2E", () => {
       await expect(page).toMatch(/Tiger/);
     });
 
-    it("entering an non-existent phone number and submitting displays a No reservation found message", async () => {
+    it("entering an non-existent phone number and submitting displays a No reservations found message", async () => {
       await page.type("input[name=mobile_number]", "1231231232");
 
       await page.screenshot({
@@ -59,7 +64,7 @@ describe("US-07 - Search reservations - E2E", () => {
       await Promise.all([
         page.click("button[type=submit]"),
         page.waitForResponse((response) =>
-          response.url().includes("mobile_number=1231231232")
+          response.url().includes("mobile_number=")
         ),
       ]);
 

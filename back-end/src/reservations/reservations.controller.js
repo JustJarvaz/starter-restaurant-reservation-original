@@ -29,8 +29,7 @@ function hasReservationId(req, res, next) {
 async function reservationExists(req, res, next) {
   req.log.debug({ __filename, methodName: reservationExists.name });
 
-  const reservation_id =
-    req.params.reservation_id || req.body?.data?.reservation_id;
+  const reservation_id = res.locals.reservation_id;
 
   const reservation = await service.read(reservation_id);
 
@@ -117,11 +116,67 @@ async function update(req, res) {
   req.log.trace({ __filename, methodName: update.name, return: true, data });
 }
 
+async function status(req, res) {
+  req.log.debug({
+    __filename,
+    methodName: status.name,
+    status: req.body.data.status,
+  });
+
+  res.locals.reservation.status = req.body.data.status;
+
+  const data = await service.status(res.locals.reservation, req.log);
+
+  res.json({ data });
+
+  req.log.trace({ __filename, methodName: status.name, return: true, data });
+}
+
+function statusIsNotFinished(req, res, next) {
+  if ("finished" === res.locals.reservation.status) {
+    next({
+      status: 400,
+      message: `Reservation status is 'finished', no changes can be made.`,
+    });
+    req.log.trace({
+      __filename,
+      methodName: statusIsNotFinished.name,
+      data: 400,
+    });
+  } else {
+    next();
+    req.log.trace({
+      __filename,
+      methodName: statusIsNotFinished.name,
+      data: res.locals.reservation.status,
+    });
+  }
+}
+
 module.exports = {
   create: asyncErrorBoundary(create),
+  delete: [
+    hasReservationId,
+    asyncErrorBoundary(reservationExists),
+    asyncErrorBoundary(destroy),
+  ],
   list: asyncErrorBoundary(list),
-  read: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(read)],
+  read: [
+    hasReservationId,
+    asyncErrorBoundary(reservationExists),
+    asyncErrorBoundary(read),
+  ],
   reservationExists: [hasReservationId, asyncErrorBoundary(reservationExists)],
-  delete: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(destroy)],
-  update: [asyncErrorBoundary(reservationExists), asyncErrorBoundary(update)],
+  status: [
+    hasReservationId,
+    asyncErrorBoundary(reservationExists),
+    statusIsNotFinished,
+    asyncErrorBoundary(status),
+  ],
+  update: [
+    hasReservationId,
+    asyncErrorBoundary(reservationExists),
+    statusIsNotFinished,
+    asyncErrorBoundary(update),
+  ],
 };

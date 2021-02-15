@@ -84,7 +84,7 @@ so that I know how many customers will arrive at the restaurant on a given day.
    - display a `Submit` button that, when clicked, saves the new reservation then displays the `/dashboard` page for the date of the new reservation
    - display a `Cancel` button that , when clicked, returns the user to the previous page.
 1. The `/dasboard` page will
-   - list all reservations for a one date (e.g. GET `/reservations?date=2020-12-30`), the date is defaulted to today, and the reservations are sorted by time
+   - list all reservations for a one date (e.g. if the URL is `/dashboard?date=2020-12-30` then send a GET to `/reservations?date=2020-12-30` to list the reservations for that date), the date is defaulted to today, and the reservations are sorted by time
    - Display next, previous, and today buttons that allow the user to see reservations on other dates
 
 > **Hint** Dates and times are JavaScript and databases can be challenging.
@@ -100,7 +100,8 @@ so that I know how many customers will arrive at the restaurant on a given day.
 ### US-2 Create reservation on a future, working date
 
 As a restaurant manager
-I want to allow my customers to make a reservation on a future, working date only
+I want to prevent creation of a reservation in the past or on a day when we are closed
+so that reservations are only at times when we are open and accepting customers.
 
 #### Acceptance criteria
 
@@ -173,7 +174,7 @@ so that I can seat more guests at that table.
 
 1. The `/dasboard` page will
    - Display a "Finish" button on each _occupied_ table.
-   - the "Finish" button must have a `data-finish-reservation-id={reservation.reservation_id}` attribute, so it can be found by the tests.
+   - the "Finish" button must have a `data-reservation-id-finish={reservation.reservation_id}` attribute, so it can be found by the tests.
    - Clicking the "Finish" button will display the following confirmation: "Is this table ready to seat new guests? This cannot be undone."
      - If the user selects "Ok" the system will:
      - Send a `DELETE` request to `/tables/:table_id/seat` in order to remove the table assignment. The tests do not check the body returned by this request.
@@ -186,19 +187,21 @@ so that I can seat more guests at that table.
 ### US-6 Reservation Status
 
 As a restaurant manager
-I want to see the status of a reservation as one of: booked, arrived, seated, finished
-so that I can use the history of reservations to estimate future staffing and ordering needs.
+I want to see the status of a reservation as one of: booked, seated, finished
+so that I can see which reservation parties are seated, and don't see reservations that are finished.
 
 #### Acceptance Criteria
 
-1. The `/tables/:table_id/seat` page will
-   - have the following required and not-nullable fields.
-     - First name: `<input name="first_name" />`
-     - Last name: `<input name="last_name" />`
-     - Mobile number: `<input name="mobile_number" />`
-     - Number of people in the party, which must be at least 1 person. `<input name="people" />`
-   - display a `Submit` button that, when clicked, saves a new reservation record for the current date and time and saves the table assignment, then displays the `/dashboard` page
-   - display a `Cancel` button that , when clicked, returns the user to the previous page.
+1. The `/dashboard` page will
+   - display the status of the reservation. The default status is "booked"
+     - the status text must have a `data-reservation-id-status={reservation.reservation_id}` attribute, so it can be found by the tests.
+   - if reservation status is "booked", display the Seat button.
+     - clicking the Seat button changes the status to "seated" and disables the Seat button.
+   - if reservation status is "seated", hide the seat button.
+     - clicking the Finish button associated with the table changes the reservation status to "finished" and removes the reservation from the dashboard.
+   - To set the status, PUT to `/reservations/:reservation_id/status` with a body of `{data: { status: "<new-status>" } }` where <new-status> is one of booked, seated, or finished
+
+> **Hint** Use `Knex.transation()` to make sure the `tables` and `reservations` records are always in sync.
 
 ### US-7 Search for a reservation by phone number
 

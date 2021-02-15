@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import ReservationButtons from "./ReservationButtons";
 
 function ReservationsList({ onCancel, reservations = [] }) {
   function cancelHandler(event) {
@@ -7,8 +7,8 @@ function ReservationsList({ onCancel, reservations = [] }) {
     onCancel(reservationId);
   }
 
-  if (reservations.length) {
-    return reservations.map((reservation) => {
+  const rows = reservations.length ? (
+    reservations.map((reservation) => {
       return (
         <tr key={reservation.reservation_id}>
           <td>{reservation.reservation_id}</td>
@@ -19,40 +19,40 @@ function ReservationsList({ onCancel, reservations = [] }) {
           <td>{reservation.reservation_date}</td>
           <td>{reservation.reservation_time}</td>
           <td>{reservation.people}</td>
-          <td>
-            <a
-              className="btn btn-secondary"
-              href={`/reservations/${reservation.reservation_id}/seat`}
-            >
-              Seat
-            </a>
+          <td data-reservation-id-status={reservation.reservation_id}>
+            {reservation.status}
           </td>
-          <td>
-            <Link
-              className="btn btn-secondary"
-              to={`/reservations/${reservation.reservation_id}/edit`}
-            >
-              Edit
-            </Link>
-          </td>
-          <td>
-            <button
-              type="button"
-              className="btn btn-secondary mr-2 cancel"
-              data-reservation-id={reservation.reservation_id}
-              onClick={cancelHandler}
-            >
-              Cancel
-            </button>
-          </td>
+          <ReservationButtons
+            status={reservation.status}
+            reservation_id={reservation.reservation_id}
+            onCancel={cancelHandler}
+          />
         </tr>
       );
-    });
-  }
-  return (
+    })
+  ) : (
     <tr>
       <td colSpan="6">No reservations found.</td>
     </tr>
+  );
+
+  return (
+    <div className="table-responsive">
+      <table className="table no-wrap">
+        <thead>
+          <tr>
+            <th className="border-top-0">#</th>
+            <th className="border-top-0">NAME</th>
+            <th className="border-top-0">PHONE</th>
+            <th className="border-top-0">DATE</th>
+            <th className="border-top-0">TIME</th>
+            <th className="border-top-0">PEOPLE</th>
+            <th className="border-top-0">STATUS</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    </div>
   );
 }
 

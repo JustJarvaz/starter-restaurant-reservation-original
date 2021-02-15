@@ -21,7 +21,7 @@ All the following questions should be answered in the affirmative for the projec
 
 If you see any of the following, they could be included in the “well done” comments.
 
-- Use of prop.types. At this point, the student has not yet learned about these , so any use of prop types shows that they are researching beyond the lesson.
+- Use of prop.types. At this point, the student has not yet learned about these, so any use of prop types shows that they are researching beyond the lesson.
 - Use of <> and </>. At this point, the student has not yet learned about fragments, so any use shows that they are researching beyond the lesson.
 - Any pure functions.
 - Any clear and informative variable or function names.
@@ -35,3 +35,6 @@ If you see any of the following, they could be included in the “areas for impr
 - Any variable or function names that could be improved.
 - Missing use of AbortController and signal to terminate API calls when it is likely for the user navigates away from a component while it is still loading.
 - Improper time zone for dates when using the system close to 00:00 GMT. This will show up in validation when GMT switches to the next date but local time is before 22:30. Change the time on your machine to test locally.
+- Updating of status of a reservation and creation of the related event are not contained in a transaction
+- Updating the status of a reservation does not return a 500 level status code if the transaction fails
+- Events are displayed sorted to make them easier to read - some sort order other than event_id.

@@ -15,6 +15,8 @@ describe("US-08 - Make changes to an existing reservation - E2E", () => {
   let browser;
   let reservation;
 
+  //  - clicking seat button hides edit and cancel
+
   const dashboardTestPath = `${baseURL}/dashboard?date=2035-01-04`;
 
   beforeAll(async () => {

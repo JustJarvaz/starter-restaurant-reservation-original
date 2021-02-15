@@ -14,7 +14,7 @@ function TablesList({ onFinish, tables = [] }) {
     }
   }
 
-  return tables.map((table) => {
+  const rows = tables.map((table) => {
     return (
       <tr key={table.table_id}>
         <td>{table.table_id}</td>
@@ -41,6 +41,22 @@ function TablesList({ onFinish, tables = [] }) {
       </tr>
     );
   });
+
+  return (
+    <div className="table-responsive">
+      <table className="table no-wrap">
+        <thead>
+          <tr>
+            <th className="border-top-0">#</th>
+            <th className="border-top-0">TABLE NAME</th>
+            <th className="border-top-0">CAPACITY</th>
+            <th className="border-top-0">Free?</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    </div>
+  );
 }
 
 export default TablesList;

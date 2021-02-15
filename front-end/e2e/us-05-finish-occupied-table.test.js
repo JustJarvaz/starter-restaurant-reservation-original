@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
 
 const fs = require("fs");
+const { containsText } = require("./utils");
 const fsPromises = fs.promises;
 
 const { createReservation, createTable } = require("./api");
@@ -31,7 +32,7 @@ describe("US-05 - Finish an occupied table - E2E", () => {
 
     beforeEach(async () => {
       reservation = await createReservation({
-        first_name: "Seat",
+        first_name: "Finish",
         last_name: Date.now().toString(10),
         mobile_number: "555-1313",
         reservation_date: "2035-01-01",
@@ -60,12 +61,11 @@ describe("US-05 - Finish an occupied table - E2E", () => {
         fullPage: true,
       });
 
-      const containsOccupied = await page.evaluate((table_id) => {
-        return document
-          .querySelector(`[data-table-id-status="${table_id}"]`)
-          .innerText.toLowerCase()
-          .includes("occupied");
-      }, table.table_id);
+      const containsOccupied = await containsText(
+        page,
+        `[data-table-id-status="${table.table_id}"]`,
+        "occupied"
+      );
 
       expect(containsOccupied).toBe(true);
 
@@ -90,12 +90,11 @@ describe("US-05 - Finish an occupied table - E2E", () => {
         fullPage: true,
       });
 
-      const containsFree = await page.evaluate((table_id) => {
-        return document
-          .querySelector(`[data-table-id-status="${table_id}"]`)
-          .innerText.toLowerCase()
-          .includes("free");
-      }, table.table_id);
+      const containsFree = await containsText(
+        page,
+        `[data-table-id-status="${table.table_id}"]`,
+        "free"
+      );
 
       expect(containsFree).toBe(true);
     });
@@ -106,12 +105,11 @@ describe("US-05 - Finish an occupied table - E2E", () => {
         fullPage: true,
       });
 
-      const containsOccupied = await page.evaluate((table_id) => {
-        return document
-          .querySelector(`[data-table-id-status="${table_id}"]`)
-          .innerText.toLowerCase()
-          .includes("occupied");
-      }, table.table_id);
+      const containsOccupied = await containsText(
+        page,
+        `[data-table-id-status="${table.table_id}"]`,
+        "occupied"
+      );
 
       expect(containsOccupied).toBe(true);
 
@@ -134,12 +132,11 @@ describe("US-05 - Finish an occupied table - E2E", () => {
         fullPage: true,
       });
 
-      const containsFree = await page.evaluate((table_id) => {
-        return document
-          .querySelector(`[data-table-id-status="${table_id}"]`)
-          .innerText.toLowerCase()
-          .includes("free");
-      }, table.table_id);
+      const containsFree = await containsText(
+        page,
+        `[data-table-id-status="${table.table_id}"]`,
+        "free"
+      );
 
       expect(containsFree).toBe(false);
     });

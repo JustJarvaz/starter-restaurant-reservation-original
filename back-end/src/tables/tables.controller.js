@@ -42,6 +42,29 @@ function tableIsAvailable(req, res, next) {
   }
 }
 
+function reservationStatusIsBooked(req, res, next) {
+  req.log.debug({ __filename, methodName: reservationStatusIsBooked.name });
+
+  if (res.locals.reservation.status === "booked") {
+    next();
+    req.log.trace({
+      __filename,
+      methodName: reservationStatusIsBooked.name,
+      data: "next()",
+    });
+  } else {
+    next({
+      status: 400,
+      message: `Reservation status must be 'booked'. It is ${res.locals.reservation.status}.`,
+    });
+    req.log.trace({
+      __filename,
+      methodName: reservationStatusIsBooked.name,
+      data: 400,
+    });
+  }
+}
+
 function hasCapacityForReservation(req, res, next) {
   req.log.debug({ __filename, methodName: hasCapacityForReservation.name });
   if (res.locals.table.capacity < res.locals.reservation.people) {
@@ -87,11 +110,11 @@ async function list(req, res) {
 async function seat(req, res) {
   req.log.debug({ __filename, methodName: seat.name });
 
-  const table = res.locals.table;
-
-  table.reservation_id = res.locals.reservation.reservation_id;
-
-  const data = await service.update(table);
+  const data = await service.seat(
+    res.locals.table.table_id,
+    res.locals.reservation.reservation_id,
+    req.log
+  );
 
   res.json({
     data,
@@ -101,7 +124,7 @@ async function seat(req, res) {
     __filename,
     methodName: seat.name,
     return: true,
-    data: table,
+    data,
   });
 }
 
@@ -125,13 +148,9 @@ function tableIsOccupied(req, res, next) {
 }
 
 async function finish(req, res) {
-  req.log.debug({ __filename, methodName: seat.name });
+  req.log.debug({ __filename, methodName: finish.name });
 
-  const table = res.locals.table;
-
-  table.reservation_id = null;
-
-  const data = await service.update(table);
+  const data = await service.finish(res.locals.table);
 
   res.json({
     data,
@@ -139,9 +158,9 @@ async function finish(req, res) {
 
   req.log.trace({
     __filename,
-    methodName: seat.name,
+    methodName: finish.name,
     return: true,
-    data: table,
+    data,
   });
 }
 
@@ -152,6 +171,7 @@ module.exports = {
     asyncErrorBoundary(tableExists),
     tableIsAvailable,
     hasCapacityForReservation,
+    reservationStatusIsBooked,
     asyncErrorBoundary(seat),
   ],
   finish: [
