@@ -37,7 +37,7 @@ describe("US-02 - Create reservation on a future, working date - E2E", () => {
     });
 
     test("displays an error message if the date of the reservation occurs in the past", async () => {
-      await page.type("input[name=reservation_date]", "12242019");
+      await page.type("input[name=reservation_date]", "12242020");
       await page.type("input[name=reservation_time]", "05:30PM");
 
       await page.screenshot({
