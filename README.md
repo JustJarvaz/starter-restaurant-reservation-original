@@ -274,6 +274,7 @@ so that reservations are accurate and current.
        - If the user selects "Cancel" no changes are made.
 1. The `/reservations/:reservation_id/edit` page will display the reservation form with the existing reservation data filled in
    - If the user selects "Submit", the reservation is updated, then the user is taken back to the previous page.
+   - Only reservations with a status of "booked" can be edited.
    - If the user selects "Cancel" no changes are made.
 
 > **Hint** The same validation used for create applies to editing a reservation. The form and the API for updating a reservation must not allow the user to violate any of the rules specified when creating a reservation.
