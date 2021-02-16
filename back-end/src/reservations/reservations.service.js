@@ -133,7 +133,7 @@ function create(newReservation) {
 function list(date) {
   return knex(tableName)
     .where("reservation_date", date)
-    .andWhereNot("status", "finished")
+    .whereNotIn("status", ["finished", "cancelled"])
     .orderBy("reservation_time");
 }
 
@@ -147,6 +147,7 @@ function search(mobile_number) {
       "translate(mobile_number, '() -', '') like ?",
       `%${mobile_number.replace(/\D/g, "")}%`
     )
+    .whereNotIn("status", ["finished", "cancelled"])
     .orderBy("reservation_date");
 }
 
