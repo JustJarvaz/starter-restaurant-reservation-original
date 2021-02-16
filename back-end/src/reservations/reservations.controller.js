@@ -143,6 +143,27 @@ function statusIsNotFinished(req, res, next) {
   }
 }
 
+function statusIsBooked(req, res, next) {
+  if ("booked" !== res.locals.reservation.status) {
+    next({
+      status: 400,
+      message: `Reservation status is '${res.locals.reservation.status}', no changes can be made.`,
+    });
+    req.log.trace({
+      __filename,
+      methodName: statusIsBooked.name,
+      data: 400,
+    });
+  } else {
+    next();
+    req.log.trace({
+      __filename,
+      methodName: statusIsBooked.name,
+      data: res.locals.reservation.status,
+    });
+  }
+}
+
 module.exports = {
   create: asyncErrorBoundary(create),
   list: asyncErrorBoundary(list),
@@ -161,7 +182,7 @@ module.exports = {
   update: [
     hasReservationId,
     asyncErrorBoundary(reservationExists),
-    statusIsNotFinished,
+    statusIsBooked,
     asyncErrorBoundary(update),
   ],
 };
