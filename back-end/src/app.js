@@ -10,7 +10,6 @@ const httpLogger = require("./logging/httpLogger");
 const notFound = require("./errors/notFound");
 const reservationsRouter = require("./reservations/reservations.router");
 const tablesRouter = require("./tables/tables.router");
-const eventsRouter = require("./events/events.router");
 
 const app = express();
 
@@ -20,7 +19,6 @@ app.use(express.json());
 
 app.use("/reservations", reservationsRouter);
 app.use("/tables", tablesRouter);
-app.use("/events", eventsRouter);
 
 app.use(notFound);
 app.use(errorHandler);
