@@ -6,6 +6,7 @@ function TablesList({ onFinish, tables = [] }) {
   }) {
     if (
       tableIdFinish &&
+      reservationIdFinish &&
       window.confirm(
         "Is this table ready to seat new guests?\n\nThis cannot be undone."
       )

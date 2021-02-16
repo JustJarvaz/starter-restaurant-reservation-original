@@ -2,17 +2,6 @@ import React from "react";
 import ReservationButtons from "./ReservationButtons";
 
 function ReservationsList({ onCancel, reservations = [] }) {
-  function cancelHandler({ target: { dataset: { reservationId } } = {} }) {
-    if (
-      reservationId &&
-      window.confirm(
-        "Do you want to cancel this reservation?\n\nThis cannot be undone."
-      )
-    ) {
-      onCancel(reservationId);
-    }
-  }
-
   const rows = reservations.length ? (
     reservations.map((reservation) => {
       return (
@@ -31,7 +20,7 @@ function ReservationsList({ onCancel, reservations = [] }) {
           <ReservationButtons
             status={reservation.status}
             reservation_id={reservation.reservation_id}
-            onCancel={cancelHandler}
+            onCancel={onCancel}
           />
         </tr>
       );

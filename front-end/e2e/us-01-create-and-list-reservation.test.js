@@ -29,7 +29,7 @@ describe("US-01 - Create and list reservations - E2E", () => {
     await browser.close();
   });
 
-  describe("/reservations/new", () => {
+  describe("/reservations/new page", () => {
     test("filling and submitting form creates a new reservation and then displays the dashboard for the reservation date", async () => {
       const lastName = Date.now().toString(10);
 
@@ -87,7 +87,7 @@ describe("US-01 - Create and list reservations - E2E", () => {
         fullPage: true,
       });
 
-      await expect(page.url()).toContain("/dashboard");
+      expect(page.url()).toContain("/dashboard");
     });
   });
 });

@@ -55,6 +55,8 @@ Once the tests are passing for a given user story, you know you have the necessa
 
 > **Note**: After running `npm test` or `npm run test:e2e` you might see something like the following in the output: `[start:frontend] Assertion failed:`. This is not a failure, it is just the frontend project getting shutdown automatically.
 
+> **Hint**: If you stop the tests before they finish, it can leave the test database in an unusual state causing the tests to fail unexpectedly the next time you run them. If this happens, delete all of the tables in the test database, including the knex\_\* tables, and try the tests again.
+
 ### Screenshots
 
 To help you better understand what might be happening during the end-to-end tests, screenshots are taken at various points in the test.
@@ -254,7 +256,7 @@ so that I can quickly access a customer's reservation when they call about their
 > }
 > ```
 
-### US-08 Make changes to an existing reservation
+### US-08 Change an existing reservation
 
 As a restaurant manager<br/>
 I want to be able to modify a reservation if a customer calls to change or cancel their reservation<br/>
@@ -267,11 +269,11 @@ so that reservations are accurate and current.
      - Clicking the "Edit" button will navigate the user to the `/reservations/:reservation_id/edit` page
    - the "Edit" button must be a link with an `href` attribute that equals `/reservations/${reservation_id}/edit`, so it can be found by the tests.
    - Display a "Cancel" button next to each reservation
-     - Clicking the "Cancel" button will display the following confirmation: "Do you want to cancel this reservation? This cannot be undone."
-       - If the user selects "Ok", the reservation is removed from the page, the confirmation disappears, and the results on the page are refreshed.
-       - Instead of deleting the reservation from the database, set the status of the reservation to `cancelled` with a PUT to `/reservations/:reservation_id/status` with a body of `{data: { status: "<new-status>" } }` where <new-status> is set to cancelled.
-       - Any reservation whose status is set to "cancelled" should not be displayed on the `/dashboard` and the `/search` page.
-       - If the user selects "Cancel" no changes are made.
+   - The Cancel button must have a `data-reservation-id-cancel={reservation.reservation_id}` attribute, so it can be found by the tests.
+   - Clicking the "Cancel" button will display the following confirmation: "Do you want to cancel this reservation? This cannot be undone."
+     - If the user selects "Ok", the reservation is removed from the page and deleted from the database, the confirmation disappears, and the results on the page are refreshed.
+       - this will set the status of the reservation to `cancelled` with a PUT to `/reservations/:reservation_id/status` with a body of `{data: { status: "cancelled" } }`.
+     - If the user selects "Cancel" no changes are made.
 1. The `/reservations/:reservation_id/edit` page will display the reservation form with the existing reservation data filled in
    - If the user selects "Submit", the reservation is updated, then the user is taken back to the previous page.
    - Only reservations with a status of "booked" can be edited.

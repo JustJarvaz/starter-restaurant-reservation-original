@@ -1,6 +1,3 @@
-// /events shows all events
-// /events?date=[today] shows only those events created today
-
 const puppeteer = require("puppeteer");
 
 const fs = require("fs");
@@ -29,7 +26,7 @@ describe("US-06 - Reservation status - E2E", () => {
     await browser.close();
   });
 
-  describe("Dashboard page", () => {
+  describe("/dashboard page", () => {
     let reservation;
     let table;
 

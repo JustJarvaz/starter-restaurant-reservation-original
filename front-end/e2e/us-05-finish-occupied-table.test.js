@@ -26,7 +26,7 @@ describe("US-05 - Finish an occupied table - E2E", () => {
     await browser.close();
   });
 
-  describe("Dashboard page", () => {
+  describe("/dashboard page", () => {
     let reservation;
     let table;
 

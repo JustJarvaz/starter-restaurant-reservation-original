@@ -27,7 +27,7 @@ describe("US-04 - Seat reservation - E2E", () => {
     await browser.close();
   });
 
-  describe("Create Table Page", () => {
+  describe("/tables/new page", () => {
     beforeEach(async () => {
       page = await browser.newPage();
       page.on("console", onPageConsole);
@@ -35,119 +35,117 @@ describe("US-04 - Seat reservation - E2E", () => {
       await page.goto(`${baseURL}/tables/new`, { waitUntil: "networkidle0" });
     });
 
-    describe("/tables/new", () => {
-      test("filling and submitting form creates a new table", async () => {
-        const tableName = `#${Date.now().toString(10)}`;
+    test("filling and submitting form creates a new table", async () => {
+      const tableName = `#${Date.now().toString(10)}`;
 
-        await page.type("input[name=table_name]", tableName);
-        await page.type("input[name=capacity]", "6");
+      await page.type("input[name=table_name]", tableName);
+      await page.type("input[name=capacity]", "6");
 
-        await page.screenshot({
-          path: ".screenshots/us-04-create-table-submit-before.png",
-          fullPage: true,
-        });
-
-        await Promise.all([
-          page.click("button[type=submit]"),
-          page.waitForNavigation({ waitUntil: "networkidle0" }),
-        ]);
-
-        await page.screenshot({
-          path: ".screenshots/us-04-create-table-submit-after.png",
-          fullPage: true,
-        });
-
-        await expect(page).toMatch(tableName);
+      await page.screenshot({
+        path: ".screenshots/us-04-create-table-submit-before.png",
+        fullPage: true,
       });
-      test("omitting table_name and submitting does not create a new table", async () => {
-        await page.type("input[name=capacity]", "3");
 
-        await page.screenshot({
-          path: ".screenshots/us-04-omit-table-name-before.png",
-          fullPage: true,
-        });
+      await Promise.all([
+        page.click("button[type=submit]"),
+        page.waitForNavigation({ waitUntil: "networkidle0" }),
+      ]);
 
-        await page.click("button[type=submit]");
-
-        await page.screenshot({
-          path: ".screenshots/us-04-omit-table-name-after.png",
-          fullPage: true,
-        });
-
-        await expect(page.url()).toContain("/tables/new");
+      await page.screenshot({
+        path: ".screenshots/us-04-create-table-submit-after.png",
+        fullPage: true,
       });
-      test("entering a single character table_name and submitting does not create a new table", async () => {
-        await page.type("input[name=table_name]", "1");
-        await page.type("input[name=capacity]", "6");
 
-        await page.screenshot({
-          path: ".screenshots/us-04-short-table-name-before.png",
-          fullPage: true,
-        });
+      await expect(page).toMatch(tableName);
+    });
+    test("omitting table_name and submitting does not create a new table", async () => {
+      await page.type("input[name=capacity]", "3");
 
-        await page.click("button[type=submit]");
-
-        await page.screenshot({
-          path: ".screenshots/us-04-short-table-name-after.png",
-          fullPage: true,
-        });
-
-        await expect(page.url()).toContain("/tables/new");
+      await page.screenshot({
+        path: ".screenshots/us-04-omit-table-name-before.png",
+        fullPage: true,
       });
-      test("omitting capacity and submitting does not create a new table", async () => {
-        await page.type("input[name=table_name]", "Omit capacity");
 
-        await page.screenshot({
-          path: ".screenshots/us-04-omit-capacity-before.png",
-          fullPage: true,
-        });
+      await page.click("button[type=submit]");
 
-        await page.click("button[type=submit]");
-
-        await page.screenshot({
-          path: ".screenshots/us-04-omit-capacity-after.png",
-          fullPage: true,
-        });
-
-        await expect(page.url()).toContain("/tables/new");
+      await page.screenshot({
+        path: ".screenshots/us-04-omit-table-name-after.png",
+        fullPage: true,
       });
-      test("canceling form returns to previous page", async () => {
-        await page.goto(`${baseURL}/reservations/new`, {
-          waitUntil: "networkidle0",
-        });
-        await page.goto(`${baseURL}/tables/new`, {
-          waitUntil: "networkidle0",
-        });
 
-        const [cancelButton] = await page.$x(
-          "//button[contains(translate(., 'ACDEFGHIJKLMNOPQRSTUVWXYZ', 'acdefghijklmnopqrstuvwxyz'), 'cancel')]"
-        );
+      expect(page.url()).toContain("/tables/new");
+    });
+    test("entering a single character table_name and submitting does not create a new table", async () => {
+      await page.type("input[name=table_name]", "1");
+      await page.type("input[name=capacity]", "6");
 
-        if (!cancelButton) {
-          throw new Error("button containing cancel not found.");
-        }
-
-        await page.screenshot({
-          path: ".screenshots/us-04-create-table-cancel-before.png",
-          fullPage: true,
-        });
-
-        await Promise.all([
-          cancelButton.click(),
-          page.waitForNavigation({ waitUntil: "networkidle0" }),
-        ]);
-
-        await page.screenshot({
-          path: ".screenshots/us-04-create-table-cancel-after.png",
-          fullPage: true,
-        });
-
-        await expect(page.url()).toContain("/reservations/new");
+      await page.screenshot({
+        path: ".screenshots/us-04-short-table-name-before.png",
+        fullPage: true,
       });
+
+      await page.click("button[type=submit]");
+
+      await page.screenshot({
+        path: ".screenshots/us-04-short-table-name-after.png",
+        fullPage: true,
+      });
+
+      expect(page.url()).toContain("/tables/new");
+    });
+    test("omitting capacity and submitting does not create a new table", async () => {
+      await page.type("input[name=table_name]", "Omit capacity");
+
+      await page.screenshot({
+        path: ".screenshots/us-04-omit-capacity-before.png",
+        fullPage: true,
+      });
+
+      await page.click("button[type=submit]");
+
+      await page.screenshot({
+        path: ".screenshots/us-04-omit-capacity-after.png",
+        fullPage: true,
+      });
+
+      expect(page.url()).toContain("/tables/new");
+    });
+    test("canceling form returns to previous page", async () => {
+      await page.goto(`${baseURL}/reservations/new`, {
+        waitUntil: "networkidle0",
+      });
+      await page.goto(`${baseURL}/tables/new`, {
+        waitUntil: "networkidle0",
+      });
+
+      const [cancelButton] = await page.$x(
+        "//button[contains(translate(., 'ACDEFGHIJKLMNOPQRSTUVWXYZ', 'acdefghijklmnopqrstuvwxyz'), 'cancel')]"
+      );
+
+      if (!cancelButton) {
+        throw new Error("button containing cancel not found.");
+      }
+
+      await page.screenshot({
+        path: ".screenshots/us-04-create-table-cancel-before.png",
+        fullPage: true,
+      });
+
+      await Promise.all([
+        cancelButton.click(),
+        page.waitForNavigation({ waitUntil: "networkidle0" }),
+      ]);
+
+      await page.screenshot({
+        path: ".screenshots/us-04-create-table-cancel-after.png",
+        fullPage: true,
+      });
+
+      expect(page.url()).toContain("/reservations/new");
     });
   });
 
-  describe("Seat reservation page", () => {
+  describe("/reservations/:reservation_id/seat page", () => {
     let reservation;
 
     beforeEach(async () => {
@@ -196,13 +194,13 @@ describe("US-04 - Seat reservation - E2E", () => {
         fullPage: true,
       });
 
-      await expect(page.url()).toContain("/dashboard");
-      await expect(page).toMatch(/occupied/i);
+      expect(page.url()).toContain("/dashboard");
+      expect(page).toMatch(/occupied/i);
     });
     test("cannot seat reservation at Bar #1", () => {});
   });
 
-  describe("Dashboard page", () => {
+  describe("/dashboard page", () => {
     let reservation;
 
     beforeEach(async () => {
