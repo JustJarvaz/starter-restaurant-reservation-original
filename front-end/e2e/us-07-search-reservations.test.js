@@ -30,7 +30,7 @@ describe("US-07 - Search reservations - E2E", () => {
   });
 
   describe("/search page", () => {
-    it("entering an existing mobile number and submitting displays the matched records", async () => {
+    test("entering an existing mobile number and submitting displays the matched records", async () => {
       await page.type("input[name=mobile_number]", "808-555-0140");
 
       await page.screenshot({
@@ -52,7 +52,7 @@ describe("US-07 - Search reservations - E2E", () => {
       await expect(page).toMatch(/Tiger/);
     });
 
-    it("entering an non-existent phone number and submitting displays a No reservations found message", async () => {
+    test("entering an non-existent phone number and submitting displays a No reservations found message", async () => {
       await page.type("input[name=mobile_number]", "1231231232");
 
       await page.screenshot({

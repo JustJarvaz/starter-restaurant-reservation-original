@@ -36,7 +36,7 @@ describe("US-02 - Create reservation on a future, working date - E2E", () => {
       await page.type("input[name=people]", "3");
     });
 
-    it("displays an error message if reservation time is before 10:30 AM", async () => {
+    test("displays an error message if reservation time is before 10:30 AM", async () => {
       await page.type("input[name=reservation_date]", "02022026");
       await page.type("input[name=reservation_time]", "10:15AM");
 
@@ -53,7 +53,7 @@ describe("US-02 - Create reservation on a future, working date - E2E", () => {
       expect(await page.$(".alert-danger")).toBeTruthy();
     });
 
-    it("displays an error message if reservation time is too close to close time", async () => {
+    test("displays an error message if reservation time is too close to close time", async () => {
       await page.type("input[name=reservation_date]", "02022026");
       await page.type("input[name=reservation_time]", "1005PM");
 
@@ -72,7 +72,7 @@ describe("US-02 - Create reservation on a future, working date - E2E", () => {
       expect(await page.$(".alert-danger")).toBeTruthy();
     });
 
-    it("displays an error message if reservation time is after the close time", async () => {
+    test("displays an error message if reservation time is after the close time", async () => {
       await page.type("input[name=reservation_date]", "02022026");
       await page.type("input[name=reservation_time]", "1045PM");
 
