@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { deleteReservation, listReservations } from "../utils/api";
+import { cancelReservation, listReservations } from "../utils/api";
 import ErrorAlert from "../layout/ErrorAlert";
 import ReservationsList from "../dashboard/ReservationsList";
 
@@ -30,8 +30,12 @@ function Search() {
   }
 
   function onCancel(reservation_id) {
+    const abortController = new AbortController();
     setCancelError(null);
-    deleteReservation(reservation_id).then(performSearch).catch(setCancelError);
+    cancelReservation(reservation_id, abortController.signal)
+      .then(performSearch)
+      .catch(setCancelError);
+    return () => abortController.abort();
   }
 
   return (

@@ -350,15 +350,20 @@ describe("US-08 - Update and delete reservations", () => {
     });
   });
 
-  describe("DELETE /reservations/:reservation_id", () => {
-    test("returns 204 for existing order", async () => {
-      const response = await request(app)
-        .delete(`/reservations/2`)
-        .set("Accept", "application/json");
+  describe("PUT /reservations/:reservation_id/status", () => {
+    test("returns 200 for status cancelled", async () => {
+      let reservation = await knex("reservations")
+        .orderBy(["reservation_date", "reservation_time"])
+        .first();
+      const status = "cancelled";
 
-      expect(response.body.data).toBeUndefined();
-      expect(response.body.error).toBeUndefined();
-      expect(response.status).toBe(204);
+      const response = await request(app)
+        .put(`/reservations/${reservation.reservation_id}/status`)
+        .set("Accept", "application/json")
+        .send({ data: { status } });
+
+      expect(response.body.data).toHaveProperty("status", status);
+      expect(response.status).toBe(200);
     });
   });
 });

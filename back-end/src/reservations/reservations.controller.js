@@ -93,16 +93,6 @@ async function read(req, res) {
   req.log.trace({ __filename, methodName: read.name, return: true, data });
 }
 
-async function destroy(req, res) {
-  req.log.debug({ __filename, methodName: destroy.name });
-
-  const { reservation_id } = res.locals.reservation;
-  const data = await service.delete(reservation_id);
-  res.sendStatus(204);
-
-  req.log.trace({ __filename, methodName: destroy.name, return: true, data });
-}
-
 async function update(req, res) {
   req.log.debug({ __filename, methodName: update.name });
 
@@ -155,11 +145,6 @@ function statusIsNotFinished(req, res, next) {
 
 module.exports = {
   create: asyncErrorBoundary(create),
-  delete: [
-    hasReservationId,
-    asyncErrorBoundary(reservationExists),
-    asyncErrorBoundary(destroy),
-  ],
   list: asyncErrorBoundary(list),
   read: [
     hasReservationId,

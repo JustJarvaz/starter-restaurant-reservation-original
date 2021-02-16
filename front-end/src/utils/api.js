@@ -97,15 +97,24 @@ export async function readReservation(reservation_id, signal) {
 }
 
 /**
- * Deletes the reservation with the specified `reservationId`.
+ * Sets the status of the reservation with the specified `reservationId` to cancelled.
  * @param reservationId
  *  the id of the reservation to delete
  * @returns {Promise<null|String>}
  *  a promise that resolves to null or an error message.
  */
-export async function deleteReservation(reservationId) {
-  const url = `${API_BASE_URL}/reservations/${reservationId}`;
-  const options = { method: "DELETE", headers };
+export async function cancelReservation(reservationId, signal) {
+  const url = `${API_BASE_URL}/reservations/${reservationId}/status`;
+  const options = {
+    method: "PUT",
+    headers,
+    body: JSON.stringify({
+      data: {
+        status: "cancelled",
+      },
+    }),
+    signal,
+  };
   return await fetchJson(url, options, {});
 }
 

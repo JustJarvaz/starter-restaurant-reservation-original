@@ -7,7 +7,7 @@ const tableName = "reservations";
 
 const validDate = /\d\d\d\d-\d\d-\d\d/;
 const validTime = /\d\d:\d\d/;
-const validStatus = ["booked", "seated", "finished"];
+const validStatus = ["booked", "seated", "finished", "cancelled"];
 
 const CLOSED_DAYS = [2]; // 0 - Sunday, 1 - Monday, 2 - Tuesday, 3 - Wednesday, 4 - Thursday, 5 - Friday, 6 - Saturday
 
@@ -150,10 +150,6 @@ function search(mobile_number) {
     .orderBy("reservation_date");
 }
 
-function destroy(reservation_id) {
-  return knex(tableName).where({ reservation_id }).del();
-}
-
 function update(reservation) {
   return knex(tableName)
     .where({ reservation_id: reservation.reservation_id })
@@ -189,7 +185,6 @@ const statusComposition = compose(update, hasValidStatus);
 
 module.exports = {
   create: traceFunction(createComposition, __filename),
-  delete: traceFunction(destroy, __filename),
   list: traceFunction(list, __filename),
   read: traceFunction(read, __filename),
   search: traceFunction(search, __filename),
