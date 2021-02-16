@@ -9,7 +9,7 @@ const onPageConsole = (msg) =>
     console.log(`<LOG::page console ${msg.type()}>`, ...eventJson)
   );
 
-describe("/reservations/new page", () => {
+describe("US-02 - Create reservation on a future, working date - E2E", () => {
   let page;
   let browser;
 
@@ -28,7 +28,7 @@ describe("/reservations/new page", () => {
     await browser.close();
   });
 
-  describe("us-2 reservation form validation", () => {
+  describe("/reservations/new page", () => {
     beforeEach(async () => {
       await page.type("input[name=first_name]", "John");
       await page.type("input[name=last_name]", "Doe");
@@ -36,7 +36,7 @@ describe("/reservations/new page", () => {
       await page.type("input[name=people]", "3");
     });
 
-    it("should display an error message if the date of the reservation occurs in the past", async () => {
+    it("displays an error message if the date of the reservation occurs in the past", async () => {
       await page.type("input[name=reservation_date]", "12242019");
       await page.type("input[name=reservation_time]", "05:30PM");
 
@@ -54,8 +54,8 @@ describe("/reservations/new page", () => {
       expect(alerts.length).toBeGreaterThan(0);
     });
 
-    it("should display an error message if reservation date falls on a Tuesday", async () => {
-      await page.type("input[name=reservation_date]", "02032026");
+    it("displays an error message if reservation date falls on a Tuesday", async () => {
+      await page.type("input[name=reservation_date]", "02062035");
       await page.type("input[name=reservation_time]", "05:30PM");
 
       await page.screenshot({

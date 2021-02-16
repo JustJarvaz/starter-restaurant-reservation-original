@@ -9,7 +9,7 @@ const onPageConsole = (msg) =>
     console.log(`<LOG::page console ${msg.type()}>`, ...eventJson)
   );
 
-describe("/reservations/new page", () => {
+describe("US-02 - Create reservation on a future, working date - E2E", () => {
   let page;
   let browser;
 
@@ -28,7 +28,7 @@ describe("/reservations/new page", () => {
     await browser.close();
   });
 
-  describe("us-2 reservation form validation", () => {
+  describe("/reservations/new page", () => {
     beforeEach(async () => {
       await page.type("input[name=first_name]", "John");
       await page.type("input[name=last_name]", "Doe");
@@ -36,7 +36,7 @@ describe("/reservations/new page", () => {
       await page.type("input[name=people]", "3");
     });
 
-    it("should display an error message if reservation time is before the open time", async () => {
+    it("displays an error message if reservation time is before 10:30 AM", async () => {
       await page.type("input[name=reservation_date]", "02022026");
       await page.type("input[name=reservation_time]", "10:15AM");
 
@@ -53,7 +53,7 @@ describe("/reservations/new page", () => {
       expect(await page.$(".alert-danger")).toBeTruthy();
     });
 
-    it("should display an error message if reservation time is too close to close time", async () => {
+    it("displays an error message if reservation time is too close to close time", async () => {
       await page.type("input[name=reservation_date]", "02022026");
       await page.type("input[name=reservation_time]", "1005PM");
 
@@ -72,7 +72,7 @@ describe("/reservations/new page", () => {
       expect(await page.$(".alert-danger")).toBeTruthy();
     });
 
-    it("should display an error message if reservation time is after the close time", async () => {
+    it("displays an error message if reservation time is after the close time", async () => {
       await page.type("input[name=reservation_date]", "02022026");
       await page.type("input[name=reservation_time]", "1045PM");
 

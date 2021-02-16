@@ -37,6 +37,7 @@ See [./rubric.md](./rubric.md). Update the rubric as you complete each user stor
 1. Create starter-code repos for front-end and back-end repos (Dale is investigating Github actions)
 1. Make it possible to run each test suite at a time, and display test output to more clearly show which tests have failed (and possibly hide e2e test logs for passing tests).
 1. Update final-capstone checkpoints with any additional info, if needed. Link starter repos to web-dev repo
+1. Move all future dates in the test out to 2035 and all past dates to 2020.
 
 ## Missing content
 
