@@ -10,7 +10,7 @@ There are no user stories for deployment: it is expected that you will deploy th
 
 This repository is set up as a monorepo, meaning that the frontend and backend projects are in one repository. This allows you to open both projects in the same editor.
 
-As you work through the user stories listed later in this document, you will be writing code that allows your frontend and backend code to talk to each other. You will also write code to  allow your controllers and services to connect to, and query, your PostgreSQL database via [Knex](http://knexjs.org/). 
+As you work through the user stories listed later in this document, you will be writing code that allows your frontend and backend code to talk to each other. You will also write code to allow your controllers and services to connect to, and query, your PostgreSQL database via [Knex](http://knexjs.org/).
 
 The table below describes the folders in this starter repository:
 
@@ -65,7 +65,7 @@ You can use the screenshots to debug your code by rendering additional informati
 
 ## Product Backlog
 
-The Product Manager has already created the user stories for _Periodic Tables_.  Each of the user stories is listed below and your Product Manager wants them to be implemented in the order in which they are listed. Another developer has already written the tests for each of the user stories so that you don't have to.
+The Product Manager has already created the user stories for _Periodic Tables_. Each of the user stories is listed below and your Product Manager wants them to be implemented in the order in which they are listed. Another developer has already written the tests for each of the user stories so that you don't have to.
 
 Although the user stories do not say anything about deployment, you should consider deploying early and often. You may even decide to deploy before adding any features. Since this is a monorepo, you can follow the instructions in [this vercel article on monorepos](https://vercel.com/blog/monorepos) to deploy this project.
 
@@ -92,15 +92,15 @@ so that I know how many customers will arrive at the restaurant on a given day.
    - list all reservations for one date only. (E.g. if the URL is `/dashboard?date=2020-12-30` then send a GET to `/reservations?date=2020-12-30` to list the reservations for that date). The date is defaulted to today, and the reservations are sorted by time.
    - display next, previous, and today buttons that allow the user to see reservations on other dates
    - display any error messages returned from the API
-1. The `/reservations` API will have the same validations as above and will return 400, along with an informative error message, when a validation error happens. 
-   
+1. The `/reservations` API will have the same validations as above and will return 400, along with an informative error message, when a validation error happens.
+
 > **Hint** Dates and times in JavaScript and databases can be challenging.
 > The users have confirmed that they will be using Chrome to access the site.
 >
 > This means you can use `<input type="date" />` and `<input type="time" />`, which are supported by Chrome but may not work in other browsers.
 >
 > `<input type="date" />` will store the date in `YYYY-MM-DD` format. This is a format that works well with the PostgreSQL `date` data type.
-> 
+>
 > `<input type="time" />` will store the time in `HH:MM:SS` format. This is a format that works well with the PostgreSQL `time` data type.
 >
 > You do not need to worry about different or changing time zones for dates or times.
@@ -115,24 +115,24 @@ so that users do not accidentally create a reservation for days when we are clos
 
 1. The `/reservations/new` page will display an error message with `className="alert alert-danger"` if any of the following constraints are violated:
    - The reservation date is a Tuesday as the restaurant is closed on Tuesday.
-   - The reservation date is in the past. Only future reservations are allowed. 
-1. The `/reservations` API will have the same validations as above and will return 400, along with an informative error message, when a validation error happens. 
- 
-> **Hint** There may be more than one validation error on the page at time. 
-> 
+   - The reservation date is in the past. Only future reservations are allowed.
+1. The `/reservations` API will have the same validations as above and will return 400, along with an informative error message, when a validation error happens.
+
+> **Hint** There may be more than one validation error on the page at time.
+>
 > For example, a reservation in the past on a Tuesday violates both rules so the page should display two errors within a single `className="alert alert-danger"`
-> 
-> However, the API validation does not need to include multiple validation error messages. 
-> You can run the validation in any order and report only one validation error at a time and the tests will pass. 
-> 
-> Also, parsing a date in YYYY-MM-DD format using the built-in Date class assumes the date is a UTC date.  UTC is a time standard that is the basis for civil time and time zones worldwide, but it is NOT a timezone. As a result, keep an eye out for how your dates are interpreted by the Date class.
-> 
-> While there is nothing preventing you from using a third party library to handle dates for your project, you are encouraged to use the built-in Date class.  
+>
+> However, the API validation does not need to include multiple validation error messages.
+> You can run the validation in any order and report only one validation error at a time and the tests will pass.
+>
+> Also, parsing a date in YYYY-MM-DD format using the built-in Date class assumes the date is a UTC date. UTC is a time standard that is the basis for civil time and time zones worldwide, but it is NOT a timezone. As a result, keep an eye out for how your dates are interpreted by the Date class.
+>
+> While there is nothing preventing you from using a third party library to handle dates for your project, you are encouraged to use the built-in Date class.
 
 ### US-03 Create reservation within eligible timeframe
 
 As a restaurant manager<br/>
-I only want to allow reservations to be created during business hours, up to 60 minutes before closing<br/> 
+I only want to allow reservations to be created during business hours, up to 60 minutes before closing<br/>
 so that users do not accidentally create a reservation for a time we cannot accommodate.
 
 #### Acceptance criteria
@@ -141,10 +141,10 @@ so that users do not accidentally create a reservation for a time we cannot acco
    - The reservation time is before 10:30 AM.
    - The reservation time is after 9:30 PM, because the restaurant closes at 10:30 PM and the customer needs to have time to enjoy their meal.
    - The reservation date and time combination is in the past. Only future reservations are allowed. E.g., if it is noon, only allow reservations starting _after_ noon today.
-1. The `/reservations` API will have the same validations as above and will return 400, along with an informative error message, when a validation error happens. 
+1. The `/reservations` API will have the same validations as above and will return 400, along with an informative error message, when a validation error happens.
 
-> **Hint** Parsing a Date that includes the time in JavaScript can be tricky. Again, keep an eye out for which time zone is being used for your Dates. 
- 
+> **Hint** Parsing a Date that includes the time in JavaScript can be tricky. Again, keep an eye out for which time zone is being used for your Dates.
+
 ### US-04 Seat reservation
 
 As a restaurant manager, >br/>
@@ -157,11 +157,12 @@ so that I know which tables are occupied and free.
 1. The `/tables/new` page will
    - have the following required and not-nullable fields:
      - Table name: `<input name="table_name" />`, which must be at least 2 characters long.
-     - Capacity:  `<input name="capacity" />`, this is the number of people that can be seated at the table, which must be at least 1 person.
+     - Capacity: `<input name="capacity" />`, this is the number of people that can be seated at the table, which must be at least 1 person.
    - display a `Submit` button that, when clicked, saves the new table then displays the `/dashboard` page
    - display a `Cancel` button that, when clicked, returns the user to the previous page
 1. The `/dashboard` page will:
-   - display a list of all reservations in one area. 
+
+   - display a list of all reservations in one area.
    - each reservation in the list will:
      - Display a "Seat" button on each reservation.
      - The "Seat" button must be a link with an `href` attribute that equals `/reservations/${reservation_id}/seat`, so it can be found by the tests.
@@ -180,10 +181,11 @@ so that I know which tables are occupied and free.
 1. The `tables` table must be seeded with the following data:
    - `Bar #1` & `Bar #2`, each with a capacity of 1.
    - `#1` & `#2`, each with a capacity of 6.
-1. The `/tables` API will have the same validations as above and will return 400, along with an informative error message, when a validation error happens. 
-  - if the table capacity is less than the number of people in the reservation, return 400 with an error message.
-   - if the table is occupied, return 400 with an error message.
- 
+1. The `/tables` API will have the same validations as above and will return 400, along with an informative error message, when a validation error happens.
+
+- if the table capacity is less than the number of people in the reservation, return 400 with an error message.
+- if the table is occupied, return 400 with an error message.
+
 > **Hint** Work through the acceptance criteria in the order listed, step-by-step. A different order may be more challenging.
 
 ### US-05 Finish an occupied table
@@ -197,11 +199,8 @@ so that I can seat more guests at that table.<br/>
 1. The `/dashboard` page will
    - Display a "Finish" button on each _occupied_ table.
    - the "Finish" button must have a `data-table-id-finish={table.table_id}` attribute, so it can be found by the tests.
-   - Clicking the "Finish" button will display the following confirmation: "Is this table ready to seat new guests? This cannot be undone." If the user selects "Ok" the system will:
-         - Send a `DELETE` request to `/tables/:table_id/seat` in order to remove the table assignment. The tests do not check the body returned by this request.
-         - The server should return 400 if the table is not occupied.
-         - Refresh the list of tables to show that the table is now available.
-    - If the user selects "Cancel" no changes are made.
+   - Clicking the "Finish" button will display the following confirmation: "Is this table ready to seat new guests? This cannot be undone." If the user selects "Ok" the system will: - Send a `DELETE` request to `/tables/:table_id/seat` in order to remove the table assignment. The tests do not check the body returned by this request. - The server should return 400 if the table is not occupied. - Refresh the list of tables to show that the table is now available.
+   - If the user selects "Cancel" no changes are made.
 
 > **Hint** The end-to-end test waits for the tables list to be refreshed before checking the free/occupied status of the table, so be sure to send a GET request to `/tables` to refresh the tables list.
 
@@ -236,7 +235,7 @@ so that I can quickly access a customer's reservation when they call about their
    - Display a "Find" button next to the search box.
    - Clicking on the "Find" button will submit a request to the server (e.g. GET `/reservations?mobile_phone=555-1212`).
      - then the system will look for the reservation(s) in the database and display all matched records on the `/search` page using the same reservations list component as the `/dashboard` page.
-     - the search page will display all reservations matching the phone number, regardless of status. 
+     - the search page will display all reservations matching the phone number, regardless of status.
    - If there are no records found after clicking Find, then display a message `No reservations found`.
 
 > **Hint** To search for a partial or complete phone number, you should ignore all formatting and search only for the digits.
@@ -269,7 +268,8 @@ so that reservations are accurate and current.
    - the "Edit" button must be a link with an `href` attribute that equals `/reservations/${reservation_id}/edit`, so it can be found by the tests.
    - Display a "Cancel" button next to each reservation
      - Clicking the "Cancel" button will display the following confirmation: "Do you want to cancel this reservation? This cannot be undone."
-       - If the user selects "Ok", the reservation is removed from the page and deleted from the database, the confirmation disappears, and the results on the page are refreshed.
+       - If the user selects "Ok", the reservation is removed from the page, the confirmation disappears, and the results on the page are refreshed.
+       - Instead of deleting the reservation from the database, set the status of the reservation to `cancelled` with a PUT to `/reservations/:reservation_id/status` with a body of `{data: { status: "<new-status>" } }` where <new-status> is cancelled.
        - If the user selects "Cancel" no changes are made.
 1. The `/reservations/:reservation_id/edit` page will display the reservation form with the existing reservation data filled in
    - If the user selects "Submit", the reservation is updated, then the user is taken back to the previous page.
