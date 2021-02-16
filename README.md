@@ -269,7 +269,8 @@ so that reservations are accurate and current.
    - Display a "Cancel" button next to each reservation
      - Clicking the "Cancel" button will display the following confirmation: "Do you want to cancel this reservation? This cannot be undone."
        - If the user selects "Ok", the reservation is removed from the page, the confirmation disappears, and the results on the page are refreshed.
-       - Instead of deleting the reservation from the database, set the status of the reservation to `cancelled` with a PUT to `/reservations/:reservation_id/status` with a body of `{data: { status: "<new-status>" } }` where <new-status> is cancelled.
+       - Instead of deleting the reservation from the database, set the status of the reservation to `cancelled` with a PUT to `/reservations/:reservation_id/status` with a body of `{data: { status: "<new-status>" } }` where <new-status> is set to cancelled.
+       - Any reservation whose status is set to "cancelled" should not be displayed on the `/dashboard` and the `/search` page.
        - If the user selects "Cancel" no changes are made.
 1. The `/reservations/:reservation_id/edit` page will display the reservation form with the existing reservation data filled in
    - If the user selects "Submit", the reservation is updated, then the user is taken back to the previous page.
