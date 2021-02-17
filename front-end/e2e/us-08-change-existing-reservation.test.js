@@ -55,7 +55,12 @@ describe("US-08 - Change an existing reservation - E2E", () => {
         });
 
         const hrefSelector = `[href="/reservations/${reservation.reservation_id}/edit"]`;
-        await page.waitForSelector(hrefSelector);
+
+        await Promise.all([
+          page.waitForSelector(hrefSelector),
+          page.click(hrefSelector),
+          page.waitForNavigation({ waitUntil: "networkidle0" }),
+        ]);
 
         await page.screenshot({
           path: ".screenshots/us-08-dashboard-edit-click-after.png",
@@ -63,6 +68,9 @@ describe("US-08 - Change an existing reservation - E2E", () => {
         });
 
         expect(await page.$(hrefSelector)).toBeDefined();
+        expect(page.url()).toContain(
+          `/reservations/${reservation.reservation_id}/edit`
+        );
       });
     });
     describe("clicking the reservation cancel button", () => {
@@ -96,6 +104,11 @@ describe("US-08 - Change an existing reservation - E2E", () => {
         });
 
         await page.waitForTimeout(500);
+
+        await page.screenshot({
+          path: ".screenshots/us-08-cancel-reservation-after.png",
+          fullPage: true,
+        });
 
         expect(await page.$(cancelButtonSelector)).toBeNull();
       });
@@ -158,7 +171,7 @@ describe("US-08 - Change an existing reservation - E2E", () => {
 
       await Promise.all([
         cancelButton.click(),
-        page.waitForNavigation({ waitUntil: "networkidle0" }),
+        page.waitForNavigation({ waitUntil: "networkidle2" }),
       ]);
 
       await page.screenshot({
@@ -192,13 +205,12 @@ describe("US-08 - Change an existing reservation - E2E", () => {
         page.waitForNavigation({ waitUntil: "networkidle0" }),
       ]);
 
-      expect(page.url()).toContain("/dashboard");
-
       await page.screenshot({
         path: ".screenshots/us-08-edit-reservation-submit-after.png",
         fullPage: true,
       });
 
+      expect(page.url()).toContain("/dashboard");
       await expect(page).toMatch(/John/);
     });
   });
