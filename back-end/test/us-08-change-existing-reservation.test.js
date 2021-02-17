@@ -39,6 +39,34 @@ describe("US-08 - Change an existing reservation", () => {
       expect(response.status).toBe(404);
     });
 
+    test.each(["seated", "finished", "cancelled"])(
+      "returns 400 for status '%s'",
+      async (status) => {
+        let reservation = await knex("reservations")
+          .orderBy(["reservation_date", "reservation_time"])
+          .first();
+
+        await request(app)
+          .put(`/reservations/${reservation.reservation_id}/status`)
+          .set("Accept", "application/json")
+          .send({ data: { status } });
+
+        reservation = await knex("reservations")
+          .where("reservation_id", reservation.reservation_id)
+          .first();
+
+        reservation.first_name = "Jill";
+
+        const response = await request(app)
+          .put(`/reservations/${reservation.reservation_id}`)
+          .set("Accept", "application/json")
+          .send({ data: reservation });
+
+        expect(response.body.error).not.toBeUndefined();
+        expect(response.status).toBe(400);
+      }
+    );
+
     test("updates the reservation", async () => {
       const expected = {
         first_name: "Mouse",
